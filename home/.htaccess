@@ -1,0 +1,6 @@
+RewriteEngine On
+Options All -Indexes
+RewriteCond %{HTTP_Host} !\.localhost$ [NC]
+RewriteCond %{HTTP_HOST} !^your\.domain [NC]
+RewriteRule ^(.*)$ https://your.domain/$1 [L,R=301]
+RewriteRule ^(.*)$ index.php [L]
