@@ -2,14 +2,14 @@
 <html lang="de">
 
 <head>
-	<?php Modules::head("") ?>
+	<?php FileRouter\Modules::head("") ?>
 
 <body>
-	<?php Modules::header() ?>
+	<?php FileRouter\Modules::header() ?>
 	<main>
 		<p>Everything inside this folder is protected</p>
 	</main>
-	<?php Modules::footer() ?>
+	<?php FileRouter\Modules::footer() ?>
 </body>
 
 </html>

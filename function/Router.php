@@ -1,12 +1,14 @@
 <?php
 
+namespace FileRouter;
+
 final class Router
 {
 	private string $path;
 	private string $file;
 	public function route(string $uri): bool
 	{
-		$this->path = $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PAGES . Request::uri($uri);
+		$this->path = $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC . Request::uri($uri);
 		$routeFile = $this->getRouteFile();
 		if ($routeFile == $this->path) $this->error(404);
 		if ($routeFile) {
@@ -14,6 +16,7 @@ final class Router
 			if (!$routeFileResponse) return false;
 			if (is_int($routeFileResponse)) $this->error($routeFileResponse);
 		}
+		if (Request::responseCode() != 200) $this->error(Request::responseCode());
 		$this->redirect();
 		return true;
 	}
@@ -27,7 +30,7 @@ final class Router
 		$pathErrorPage = $_SERVER["DOCUMENT_ROOT"] . Config::PATH_ERROR;
 		http_response_code($code);
 		header("Content-Type: text/html");
-		if (!file_exists($pathErrorPage)) die("<h1>Error</h1><p>An error occurred in the request.</p><p>Please contact the webmaster.</p>");
+		if (!file_exists($pathErrorPage)) die("<h1>Error</h1><p>An error occurred in the request.</p><p>Please contact the webmaster: info[at]friedinger.org</p>");
 		Output::$status = htmlspecialchars($code);
 		require($pathErrorPage);
 		exit;
@@ -39,7 +42,15 @@ final class Router
 		if (!file_exists($this->file)) $this->error(404);
 		$mime = $this->getMime();
 		header("Content-Type: " . $mime . "; charset=utf-8");
-		require($this->file);
+		if (str_starts_with($mime, "image/") && class_exists(__NAMESPACE__ . "\Image")) {
+			$imageHandle = (new Image())->handle($this->file, $mime);
+			if ($imageHandle) return;
+		}
+		if ($mime == "text/html") {
+			require($this->file);
+		} else {
+			readfile($this->file);
+		}
 	}
 	private function getRouteFile(): string|false
 	{
@@ -47,7 +58,7 @@ final class Router
 		for ($i = 0; $i < 100; $i++) {
 			$file = $path . "/_route.php";
 			if (file_exists($file)) return $file;
-			if ($path == $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PAGES) break;
+			if ($path == $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC) break;
 			$path = dirname($path) . "/";
 		}
 		return false;

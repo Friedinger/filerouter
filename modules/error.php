@@ -4,28 +4,20 @@ header('Content-Type: text/html; charset=utf-8');
 <!DOCTYPE html>
 <html lang="de">
 
-<?php Modules::head("Error " . Output::$status) ?>
+<?php FileRouter\Modules::head("Error " . FileRouter\Output::$status) ?>
 
 <body>
-	<?php Modules::header() ?>
+	<?php FileRouter\Modules::header() ?>
 	<main>
 		<?php
-		switch (Output::$status) {
-			case "403":
-				print("<h1>Zugriff verweigert</h1>");
-				print("<p>Error 403</p>");
-				break;
-			case "404":
-				print("<h1>Die Seite wurde nicht gefunden</h1>");
-				print("<p>Error 404</p>");
-				break;
-			default:
-				print("<h1>Error " . Output::$status . "</h1>");
-				break;
-		}
+		print match (FileRouter\Output::$status) {
+			"403" => "<h1>Zugriff verweigert</h1><p>Error 403</p>",
+			"404" => "<h1>Die Seite wurde nicht gefunden</h1><p>Error 404</p>",
+			default => "<h1>Error " . FileRouter\Output::$status . "</h1>",
+		};
 		?>
 	</main>
-	<?php Modules::footer() ?>
+	<?php FileRouter\Modules::footer() ?>
 </body>
 
 </html>

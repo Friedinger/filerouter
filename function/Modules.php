@@ -1,10 +1,13 @@
 <?php
 
+namespace FileRouter;
+
 final class Modules
 {
-	public static function head(string $title): void
+	public static function head(string $title, string $additionalCss = ""): void
 	{
 		Output::$title = $title;
+		Output::$additionalCss = $additionalCss;
 		require($_SERVER["DOCUMENT_ROOT"] . Config::PATH_MODULES . "head.php");
 	}
 	public static function header(): void
@@ -17,6 +20,6 @@ final class Modules
 	}
 	public static function pathPages(): string
 	{
-		return $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PAGES;
+		return $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC;
 	}
 }

@@ -1,5 +1,7 @@
 <?php
 
+namespace FileRouter;
+
 final class Request
 {
 	public static function uri(string $requestUri = null): string
@@ -7,6 +9,10 @@ final class Request
 		$uri = $requestUri ?? filter_input(INPUT_SERVER, "REQUEST_URI", FILTER_SANITIZE_SPECIAL_CHARS);
 		$uri = self::prepareRequest($uri);
 		return htmlspecialchars($uri);
+	}
+	public static function responseCode(): int
+	{
+		return http_response_code();
 	}
 	public static function get(string $key): string|null
 	{

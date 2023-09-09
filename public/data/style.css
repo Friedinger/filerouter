@@ -1,0 +1,16 @@
+body {
+	font-family: Arial, sans-serif;
+	color-scheme: dark;
+	background: black;
+	color: white;
+	margin: 0;
+}
+body > * {
+	padding: 1rem;
+}
+header {
+	background-color: hsl(0, 100%, 30%);
+}
+footer {
+	background-color: hsl(120, 100%, 15%);
+}
