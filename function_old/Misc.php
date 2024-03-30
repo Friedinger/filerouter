@@ -1,5 +1,14 @@
 <?php
 
+/*
+
+FileRouter
+A simple php router that allows to run code before accessing a file while keeping the file structure as the url structure.
+
+by Friedinger (friedinger.org)
+
+*/
+
 namespace FileRouter;
 
 final class Misc
@@ -12,7 +21,7 @@ final class Misc
 				"httponly" => true,
 				"samesite" => "Strict",
 			]);
-			session_name("PhysiotherapieImHandwerkshof");
+			session_name("Friedinger");
 			session_start();
 		}
 		return session_id();

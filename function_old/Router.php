@@ -1,15 +1,24 @@
 <?php
 
+/*
+
+FileRouter
+A simple php router that allows to run code before accessing a file while keeping the file structure as the url structure.
+
+by Friedinger (friedinger.org)
+
+*/
+
 namespace FileRouter;
 
 final class Router
 {
 	private string $path;
 	private string $file;
-	public function route(string $uri): bool
+	public function route(): bool
 	{
-		$this->path = $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC . Request::uri($uri);
-		$routeFile = $this->getRouteFile();
+		$this->path = $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC . Request::uri();
+		$routeFile = $this->getRouteFile($this->path);
 		if ($routeFile == $this->path) $this->error(404);
 		if ($routeFile) {
 			$routeFileResponse = include $routeFile;
@@ -31,7 +40,7 @@ final class Router
 		http_response_code($code);
 		header("Content-Type: text/html");
 		if (!file_exists($pathErrorPage)) die("<h1>Error</h1><p>An error occurred in the request.</p><p>Please contact the webmaster: info[at]friedinger.org</p>");
-		Output::$status = htmlspecialchars($code);
+		Output::set("status", htmlspecialchars($code));
 		require($pathErrorPage);
 		exit;
 	}
@@ -43,7 +52,7 @@ final class Router
 		$mime = $this->getMime();
 		header("Content-Type: " . $mime . "; charset=utf-8");
 		if (str_starts_with($mime, "image/") && class_exists(__NAMESPACE__ . "\Image")) {
-			$imageHandle = (new Image())->handle($this->file, $mime);
+			$imageHandle = Image::handle($this->file, $mime);
 			if ($imageHandle) return;
 		}
 		if ($mime == "text/html") {
@@ -52,9 +61,9 @@ final class Router
 			readfile($this->file);
 		}
 	}
-	private function getRouteFile(): string|false
+	
+	private function getRouteFile(string $path): string|false
 	{
-		$path = $this->path;
 		for ($i = 0; $i < 100; $i++) {
 			$file = $path . "/_route.php";
 			if (file_exists($file)) return $file;
@@ -63,6 +72,7 @@ final class Router
 		}
 		return false;
 	}
+
 	private function getMime(): string|false
 	{
 		$mimeTypes = array( // List of mime types depending on file extension

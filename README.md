@@ -1,2 +1,3 @@
 # FileRouter
-Filebased PHP router
+
+File based PHP router that allows to protect the files on a webserver

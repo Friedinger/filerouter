@@ -5,11 +5,11 @@
 	<?php FileRouter\Modules::head("") ?>
 
 <body>
-	<?php FileRouter\Modules::header() ?>
+	<?php FileRouter\Modules::load("header") ?>
 	<main>
 		<p>Everything inside this folder is protected</p>
 	</main>
-	<?php FileRouter\Modules::footer() ?>
+	<?php FileRouter\Modules::load("footer") ?>
 </body>
 
 </html>
