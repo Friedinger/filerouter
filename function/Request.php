@@ -26,6 +26,11 @@ final class Request
 		return htmlspecialchars($uri);
 	}
 
+	public static function filePath(): string
+	{
+		return $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC . Request::uri();
+	}
+
 	public static function get(string $key): string|null
 	{
 		$get = $_GET[$key] ?? null;

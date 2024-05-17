@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="de">
+<settings>
+	<title></title>
+</settings>
 
-<head>
-	<?php FileRouter\Modules::head("") ?>
-
-<body>
-	<?php FileRouter\Modules::load("header") ?>
-	<main>
-		<p>Main</p>
-	</main>
-	<?php FileRouter\Modules::load("footer") ?>
-</body>
-
-</html>
+<main>
+	<h1>Heading</h1>
+	<p>Main</p>
+</main>

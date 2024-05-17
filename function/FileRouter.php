@@ -7,6 +7,8 @@ A simple php router that allows to run code before accessing a file while keepin
 
 by Friedinger (friedinger.org)
 
+Version: 2.0
+
 */
 
 namespace FileRouter;
@@ -18,7 +20,16 @@ spl_autoload_register(function ($class) {
 	}
 });
 
-Misc::session();
-Output::setOutput();
+$proxy = new Proxy(Request::filePath());
+$proxy->handle();
+if ($proxy->handled) {
+	return;
+}
 
-(new Router())->route();
+$router = new Router();
+$router->handle(Request::filePath());
+if ($router->handled) {
+	return;
+}
+
+(new Error(404))->handle();

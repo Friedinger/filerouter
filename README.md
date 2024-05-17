@@ -1,3 +1,3 @@
 # FileRouter
 
-File based PHP router that allows to protect the files on a webserver
+A simple php router that allows to run code before accessing a file while keeping the file structure as the url structure.
