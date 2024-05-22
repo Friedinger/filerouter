@@ -16,11 +16,7 @@ final class Misc
 	public static function session(): string|false
 	{
 		if (session_id() == "") {
-			session_set_cookie_params([
-				"secure" => true,
-				"httponly" => true,
-				"samesite" => "Strict",
-			]);
+			session_set_cookie_params(Config::SESSION_COOKIE_PARAMS);
 			session_name(Config::SESSION_NAME);
 			session_start();
 		}

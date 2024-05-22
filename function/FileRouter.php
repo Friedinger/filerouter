@@ -20,6 +20,10 @@ spl_autoload_register(function ($class) {
 	}
 });
 
+if (Config::SESSION) {
+	Misc::session();
+}
+
 $proxy = new Proxy(Request::filePath());
 $proxy->handle();
 if ($proxy->handled) {
