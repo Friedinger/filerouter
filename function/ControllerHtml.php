@@ -13,41 +13,46 @@ namespace FileRouter;
 
 class ControllerHtml
 {
-	private static array $settings;
-	private static Output $content;
 	public static function redirect(string $filePath): bool
 	{
 		$content = new Output($filePath);
 		$content = self::handle($content);
+
+		// Print handled content
 		$content->print();
 		return true;
 	}
 
 	public static function handle(Output $content): Output
 	{
-		self::$content = $content;
+		// Get settings from content file
+		$settings = $content->getContentArray("settings");
+		$content->replace("settings", "");
 
-		self::$settings = self::$content->getContentArray("settings");
-		self::$content->replace("settings", "");
-		self::handleHead();
-		self::handleHeader();
-		self::handleFooter();
+		// Handle head, header and footer
+		$content = self::handleHead($content, $settings);
+		$content = self::handleHeader($content);
+		$content = self::handleFooter($content);
 
-		return self::$content;
+		return $content;
 	}
 
-	private static function handleHead(): void
+	private static function handleHead(Output $content, array $settings): Output
 	{
 		$head = new Output($_SERVER["DOCUMENT_ROOT"] . Config::PATH_HEAD);
-		if (!isset(self::$settings["title"])) {
-			$title = self::$content->getContent("h1");
+
+		// Set page title
+		if (!isset($settings["title"])) {
+			// Set title from h1 with prefix and suffix
+			$title = $content->getContent("h1");
 			if (!empty(Config::TITLE_PREFIX)) {
 				$title = Config::TITLE_PREFIX . Config::TITLE_SEPARATOR . $title;
 			}
 			if (!empty(Config::TITLE_SUFFIX)) {
 				$title = $title . Config::TITLE_SEPARATOR . Config::TITLE_SUFFIX;
 			}
-		} elseif (empty(self::$settings["title"])) {
+		} elseif (empty($settings["title"])) {
+			// Empty title just use prefix and suffix
 			$title = "";
 			if (!empty(Config::TITLE_PREFIX)) {
 				$title = Config::TITLE_PREFIX;
@@ -59,32 +64,50 @@ class ControllerHtml
 				$title = $title . Config::TITLE_SUFFIX;
 			}
 		} else {
-			$title = self::$settings["title"];
+			// set title from settings with prefix and suffix
+			$title = $settings["title"];
 		}
 		$head->replaceContent("title", $title);
-		$replace = "<html><head>" . $head->getContent("head") . "</head><body>" . self::$content->getContent("body") . "</body></html>";
-		self::$content = new Output($replace, true);
+
+		$replace = "<html><head>" . $head->getContent("head") . "</head><body>" . $content->getContent("body") . "</body></html>";
+		return new Output($replace, true);
 	}
 
-	private static function handleHeader(): void
+	private static function handleHeader(Output $content): Output
 	{
-		$contentHeader = self::$content->getContent("header");
+		$contentHeader = $content->getContent("header");
 		if (is_null($contentHeader)) {
+			// Load header from modules file
 			$header = new Output($_SERVER["DOCUMENT_ROOT"] . Config::PATH_HEADER);
-			self::$content->replaceContent("body", $header->getContent("html") . self::$content->getContent("body"), "xml");
+			$replace = $header->getContent("body") . $content->getContent("body");
+			$content->replaceContent("body", $replace, "xml");
+			return $content;
 		} elseif (empty(trim($contentHeader))) {
-			self::$content->replace("header", "");
+			// Remove header
+			$content->replace("header", "");
+			return $content;
+		} else {
+			// Keep header set in content
+			return $content;
 		}
 	}
 
-	private static function handleFooter(): void
+	private static function handleFooter(Output $content): Output
 	{
-		$contentFooter = self::$content->getContent("footer");
+		$contentFooter = $content->getContent("footer");
 		if (is_null($contentFooter)) {
+			// Load footer from modules file
 			$footer = new Output($_SERVER["DOCUMENT_ROOT"] . Config::PATH_FOOTER);
-			self::$content->replaceContent("body", self::$content->getContent("body") . $footer->getContent("html"), "xml");
+			$replace = $content->getContent("body") . $footer->getContent("body");
+			$content->replaceContent("body", $replace, "xml");
+			return $content;
 		} elseif (empty(trim($contentFooter))) {
-			self::$content->replace("footer", "");
+			// Remove footer
+			$content->replace("footer", "");
+			return $content;
+		} else {
+			// Keep footer set in content
+			return $content;
 		}
 	}
 }

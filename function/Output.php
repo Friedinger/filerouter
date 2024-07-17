@@ -22,26 +22,26 @@ final class Output
 	{
 		$this->dom = new DOMDocument();
 		if ($directInput) {
-			$this->dom->loadHTML($content, LIBXML_NOERROR);
-			return;
-		}
-		if (Config::ALLOW_PAGE_PHP) {
+			$output = $content;
+		} elseif (Config::ALLOW_PAGE_PHP) {
 			ob_start();
 			require($content);
-			$content = ob_get_clean();
-			$this->dom->loadHTML($content, LIBXML_NOERROR);
+			$output = ob_get_clean();
 		} else {
-			$this->dom->loadHTMLFile($content, LIBXML_NOERROR);
+			$output = file_get_contents($content);
 		}
+		$this->dom->loadHTML(mb_convert_encoding($output, 'HTML-ENTITIES', 'UTF-8'), LIBXML_NOERROR);
 	}
 
 	public function print(): void
 	{
-		echo $this->dom->saveHTML();
+		$this->dom->formatOutput = true;
+		echo $this->dom->saveHTML($this->dom->documentElement);
 	}
 
-	public function getContent(string $tagName = "body"): string|null
+	public function getContent(string $tagName = null): string|null
 	{
+		if (is_null($tagName)) $tagName = $this->dom->documentElement->tagName;
 		$node = $this->dom->getElementsByTagName($tagName)->item(0);
 		if (!$node) return null;
 		$dom = new DOMDocument;
@@ -118,14 +118,14 @@ final class Output
 	{
 		$content = $content ?? "";
 		$xpath = new \DOMXPath($this->dom);
-		$nodes = $xpath->query("//" . "*[@*[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" . $tag . "')]]");
+		$nodes = $xpath->query("//" . "*[@*[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '{$tag}')]]");
 		foreach ($nodes as $node) {
 			foreach ($node->attributes as $attribute) {
 				$value = $attribute->value;
-				$value = str_ireplace("<" . $tag . "></" . $tag . ">", $content, $value);
-				$value = str_ireplace("<" . $tag . " />", $content, $value);
-				$value = str_ireplace("<" . $tag . "/>", $content, $value);
-				$value = str_ireplace("<" . $tag . ">", $content, $value);
+				$value = str_ireplace("<{$tag}></{$tag}>", $content, $value);
+				$value = str_ireplace("<{$tag} />", $content, $value);
+				$value = str_ireplace("<{$tag}/>", $content, $value);
+				$value = str_ireplace("<{$tag}>", $content, $value);
 				$attribute->value = $value;
 			}
 		}
@@ -159,8 +159,10 @@ final class Output
 				$element->setAttribute("controls", true);
 				break;
 			case "xml":
-				$element = $this->dom->createDocumentFragment();
-				$element->appendXML($value);
+				$valueDom = new DOMDocument();
+				$valueDom->loadHTML(mb_convert_encoding($value, 'HTML-ENTITIES', 'UTF-8'), LIBXML_NOERROR);
+				// TODO: False html opening tags
+				$element = $this->dom->importNode($valueDom->documentElement, true);
 				break;
 			default:
 				$element = $this->dom->createTextNode($value);
