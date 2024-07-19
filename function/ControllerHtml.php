@@ -11,8 +11,19 @@ by Friedinger (friedinger.org)
 
 namespace FileRouter;
 
+/**
+ * Class ControllerHtml
+ *
+ * Responsible for handling HTML and PHP files.
+ */
 class ControllerHtml
 {
+	/**
+	 * Outputs the content of specified HTML or PHP file to the browser after processing it.
+	 *
+	 * @param string $filePath The file path to redirect to.
+	 * @return bool Returns true if the redirection is successful, false otherwise.
+	 */
 	public static function redirect(string $filePath): bool
 	{
 		$content = new Output($filePath);
@@ -23,6 +34,15 @@ class ControllerHtml
 		return true;
 	}
 
+	/**
+	 * Handles the content of the web page.
+	 *
+	 * This method processes the content of the web page by handling the head, header, and footer.
+	 * The settings are read from the content file and the title is set accordingly.
+	 *
+	 * @param Output $content The content of the web page.
+	 * @return Output The processed content of the web page.
+	 */
 	public static function handle(Output $content): Output
 	{
 		// Get settings from content file

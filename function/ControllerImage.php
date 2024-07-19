@@ -16,7 +16,7 @@ use \GdImage;
 /**
  * Class ControllerImage
  *
- * Responsible for handling image-related operations.
+ * Responsible for handling image files.
  */
 class ControllerImage
 {
