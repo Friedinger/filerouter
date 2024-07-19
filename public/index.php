@@ -5,5 +5,5 @@
 <main>
 	<h1>Heading</h1>
 	<p>Main</p>
-	<p>äöüß€¥♫♠♣♥♦</p>
+	<p>UTF8: äöüß€¥♫♠♣♥♦</p>
 </main>

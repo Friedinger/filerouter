@@ -26,8 +26,8 @@ class ControllerHtml
 	public static function handle(Output $content): Output
 	{
 		// Get settings from content file
-		$settings = $content->getContentArray("settings");
-		$content->replace("settings", "");
+		$settings = $content->getNodeContentArray("settings");
+		$content->replaceAll("settings", "");
 
 		// Handle head, header and footer
 		$content = self::handleHead($content, $settings);
@@ -44,7 +44,7 @@ class ControllerHtml
 		// Set page title
 		if (!isset($settings["title"])) {
 			// Set title from h1 with prefix and suffix
-			$title = $content->getContent("h1");
+			$title = $content->getNodeContent("h1");
 			if (!empty(Config::TITLE_PREFIX)) {
 				$title = Config::TITLE_PREFIX . Config::TITLE_SEPARATOR . $title;
 			}
@@ -67,24 +67,24 @@ class ControllerHtml
 			// set title from settings with prefix and suffix
 			$title = $settings["title"];
 		}
-		$head->replaceContent("title", $title);
+		$head->replaceNodeContent("title", $title);
 
-		$replace = "<html><head>" . $head->getContent("head") . "</head><body>" . $content->getContent("body") . "</body></html>";
+		$replace = "<html><head>" . $head->getNodeContent("head") . "</head><body>" . $content->getNodeContent("body") . "</body></html>";
 		return new Output($replace, true);
 	}
 
 	private static function handleHeader(Output $content): Output
 	{
-		$contentHeader = $content->getContent("header");
+		$contentHeader = $content->getNodeContent("header");
 		if (is_null($contentHeader)) {
 			// Load header from modules file
 			$header = new Output($_SERVER["DOCUMENT_ROOT"] . Config::PATH_HEADER);
-			$replace = $header->getContent("body") . $content->getContent("body");
-			$content->replaceContent("body", $replace, "xml");
+			$replace = $header->getNodeContent("body") . $content->getNodeContent("body");
+			$content->replaceNodeContent("body", $replace);
 			return $content;
 		} elseif (empty(trim($contentHeader))) {
 			// Remove header
-			$content->replace("header", "");
+			$content->replaceAll("header", "");
 			return $content;
 		} else {
 			// Keep header set in content
@@ -94,16 +94,16 @@ class ControllerHtml
 
 	private static function handleFooter(Output $content): Output
 	{
-		$contentFooter = $content->getContent("footer");
+		$contentFooter = $content->getNodeContent("footer");
 		if (is_null($contentFooter)) {
 			// Load footer from modules file
 			$footer = new Output($_SERVER["DOCUMENT_ROOT"] . Config::PATH_FOOTER);
-			$replace = $content->getContent("body") . $footer->getContent("body");
-			$content->replaceContent("body", $replace, "xml");
+			$replace = $content->getNodeContent("body") . $footer->getNodeContent("body");
+			$content->replaceNodeContent("body", $replace);
 			return $content;
 		} elseif (empty(trim($contentFooter))) {
 			// Remove footer
-			$content->replace("footer", "");
+			$content->replaceAll("footer", "");
 			return $content;
 		} else {
 			// Keep footer set in content

@@ -31,8 +31,8 @@ class Error
 		$pathErrorPage = $_SERVER["DOCUMENT_ROOT"] . Config::PATH_ERROR;
 		if (!file_exists($pathErrorPage)) die(Config::ERROR_FATAL);
 		$output = new Output($pathErrorPage);
-		$output->replace("error-code", htmlspecialchars($this->errorCode));
-		$output->replace("error-message", htmlspecialchars($this->errorMessage));
+		$output->replaceAll("error-code", htmlspecialchars($this->errorCode));
+		$output->replaceAll("error-message", htmlspecialchars($this->errorMessage));
 		$output = ControllerHtml::handle($output);
 		$output->print();
 		exit;
