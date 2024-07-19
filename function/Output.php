@@ -15,7 +15,9 @@ use DOMDocument;
 use DOMNode;
 
 /**
- * Class Output represents the output of a web page.
+ * Class Output
+ *
+ * Responsible for handling the output of the web page.
  * It allows to manipulate the HTML content of a web page by replacing nodes and attributes.
  * The content can be loaded from a file or a direct input.
  * The output is then formatted and printed to the browser.

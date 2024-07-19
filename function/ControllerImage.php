@@ -13,12 +13,28 @@ namespace FileRouter;
 
 use \GdImage;
 
+/**
+ * Class ControllerImage
+ *
+ * Responsible for handling image-related operations.
+ */
 class ControllerImage
 {
+	/**
+	 * Redirects to the specified image file and outputs a resized version of the image.
+	 * The width of the resized image can be specified by the query parameter "res".
+	 * If the width is not specified, the original width of the image is used.
+	 * The height of the resized image is calculated based on the aspect ratio of the original image.
+	 *
+	 * @param string $filePath The path to the image file.
+	 * @return bool Returns true if the image was successfully resized and outputted, false otherwise.
+	 */
 	public static function redirect(string $filePath): bool
 	{
-		if (!class_exists("GdImage")) return false;
-		$imageType = Misc::getMime($filePath);
+		if (!class_exists("GdImage")) return false; # Check if GD library is available
+		$imageType = Misc::getMime($filePath); # Get mime type of file
+
+		# Create image based on mime type, resize it and output it
 		if ($imageType == "image/png") {
 			$image = imagecreatefrompng($filePath);
 			return imagepng(self::resize($image));
@@ -40,15 +56,15 @@ class ControllerImage
 
 	private static function resize(GdImage $image): GdImage
 	{
-		$image = imagescale($image, self::getWidth($image));
-		imagesavealpha($image, true);
+		$image = imagescale($image, self::getWidth($image)); # Resize image to requested width
+		imagesavealpha($image, true); # Save alpha channel
 		return $image;
 	}
 
 	private static function getWidth(GdImage $image): int
 	{
-		$originalWidth = imagesx($image) ?? 0;
-		$requestWidth = Request::get("res") ?? $originalWidth;
-		return min($originalWidth, $requestWidth);
+		$originalWidth = imagesx($image) ?? 0; # Get original width of image
+		$requestWidth = Request::get("res") ?? $originalWidth; # Get requested width from query parameter
+		return min($originalWidth, $requestWidth); # Return requested width if smaller than original width
 	}
 }
