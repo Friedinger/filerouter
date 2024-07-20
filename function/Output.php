@@ -22,7 +22,7 @@ use DOMNode;
  * The content can be loaded from a file or a direct input.
  * The output is then formatted and printed to the browser.
  */
-final class Output
+class Output
 {
 	private DOMDocument $dom;
 

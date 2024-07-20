@@ -13,7 +13,7 @@ namespace FileRouter;
 
 /**
  * Class Error
- * 
+ *
  * Represents an error with an error code and an error message.
  */
 class Error

@@ -11,7 +11,7 @@ by Friedinger (friedinger.org)
 
 namespace FileRouter;
 
-final class Request
+class Request
 {
 	public static function uri(): string
 	{

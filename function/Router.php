@@ -11,7 +11,7 @@ by Friedinger (friedinger.org)
 
 namespace FileRouter;
 
-final class Router
+class Router
 {
 	public bool $handled = false;
 	public function handle($path): void
