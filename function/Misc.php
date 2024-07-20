@@ -11,8 +11,17 @@ by Friedinger (friedinger.org)
 
 namespace FileRouter;
 
+/**
+ * Misc class contains miscellaneous utility functions.
+ */
 final class Misc
 {
+	/**
+	 * Starts a session if one is not already started and returns the session ID.
+	 * Session name and cookie parameters are set in the Config class.
+	 *
+	 * @return string|false The session ID if a session is started, false otherwise.
+	 */
 	public static function session(): string|false
 	{
 		if (session_id() == "") {
@@ -23,6 +32,13 @@ final class Misc
 		return session_id();
 	}
 
+	/**
+	 * Retrieves the MIME type of a file.
+	 * Uses mime_content_type as default, but also provides a custom list of MIME types based on file extension.
+	 *
+	 * @param string $filePath The path to the file.
+	 * @return string|false The MIME type of the file if it can be determined, false otherwise.
+	 */
 	public static function getMime(string $filePath): string|false
 	{
 		$mimeTypes = array( // List of mime types depending on file extension
@@ -34,6 +50,6 @@ final class Misc
 			"vbs" => "application/x-vbs",
 		);
 		$extension = pathinfo($filePath, PATHINFO_EXTENSION); // Get file extension
-		return $mimeTypes[$extension] ?? mime_content_type($filePath); // Chose mime type depending on file extension, php mime function as fallback
+		return $mimeTypes[$extension] ?? mime_content_type($filePath); // Choose mime type depending on file extension, php mime function as fallback
 	}
 }
