@@ -31,8 +31,8 @@ if ($proxy->handled) {
 }
 
 $router = new Router();
-$router->handle(Request::filePath());
-if ($router->handled) {
+$routerHandled = $router->handle(Request::filePath());
+if ($routerHandled) {
 	return;
 }
 
