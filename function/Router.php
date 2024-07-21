@@ -53,8 +53,7 @@ class Router
 		$directoryPosition = array_search(strtolower($path), array_map("strtolower", $directoryContent)); // Search for path in directory content (case insensitive)
 		if ($directoryPosition === false) {
 			// If path is not in directory content, return 404 error
-			(new Error(404))->handle();
-			exit;
+			throw new Error(404);
 		}
 
 		return $directoryContent[$directoryPosition]; // Get path from directory content

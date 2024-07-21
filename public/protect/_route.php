@@ -1,2 +1,2 @@
 <?php
-return new FileRouter\Error(403);
+throw new FileRouter\Error(403);

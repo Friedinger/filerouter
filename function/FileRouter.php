@@ -37,4 +37,4 @@ $routerHandled = $router->handle(Request::filePath());
 if ($routerHandled) exit; // Stop handling if request was handled by router
 
 // Error 404 if request was not handled before
-(new Error(404))->handle();
+throw new Error(404);

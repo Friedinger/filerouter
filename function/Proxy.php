@@ -39,11 +39,6 @@ class Proxy
 			return $routeFileResponse; // Return route file response if boolean to continue handling request or not
 		}
 
-		if ($routeFileResponse instanceof Error) {
-			$routeFileResponse->handle(); // Handle error if route file response is an error page
-			return true;
-		}
-
 		if (is_callable($routeFileResponse)) {
 			$routeFileResponse(); // Call route file response if callable
 			return false;
