@@ -43,14 +43,14 @@ final class Misc
 	 */
 	public static function getMime(string $filePath): string|false
 	{
-		$mimeTypes = array( // List of mime types depending on file extension
+		$mimeTypes = [ // List of mime types depending on file extension
 			"php" => "text/html",
 			"html" => "text/html",
 			"css" => "text/css",
 			"js" => "application/x-javascript",
 			"ico" => "image/x-icon",
 			"vbs" => "application/x-vbs",
-		);
+		];
 		$extension = pathinfo($filePath, PATHINFO_EXTENSION); // Get file extension
 		return $mimeTypes[$extension] ?? mime_content_type($filePath); // Choose mime type depending on file extension, php mime function as fallback
 	}
