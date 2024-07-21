@@ -24,16 +24,16 @@ if (Config::SESSION) {
 	Misc::session();
 }
 
-$proxy = new Proxy(Request::filePath());
-$proxy->handle();
-if ($proxy->handled) {
-	return;
+$proxy = new Proxy();
+$proxyHandled = $proxy->handle(Request::filePath());
+if ($proxyHandled) {
+	exit;
 }
 
 $router = new Router();
 $routerHandled = $router->handle(Request::filePath());
 if ($routerHandled) {
-	return;
+	exit;
 }
 
 (new Error(404))->handle();

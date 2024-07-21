@@ -11,56 +11,56 @@ by Friedinger (friedinger.org)
 
 namespace FileRouter;
 
+/**
+ * Class Proxy
+ *
+ * Handles route file processing.
+ */
 class Proxy
 {
-	public bool $handled = false;
-	private string $path;
-
-	public function __construct($requestedPath)
+	/**
+	 * Loads and processes route file.
+	 * Determines based on route file response if request handling should continue or not.
+	 *
+	 * @return bool True if request handling should continue, false if not.
+	 */
+	public function handle(string $path): bool
 	{
-		$this->path = $requestedPath;
-	}
+		$routeFile = $this->getRouteFile($path); // Get route file
+		if (!$routeFile) return false; // No handling if no route file
 
-	public function handle(): bool
-	{
-		$routeFile = $this->getRouteFile($this->path);
-		if (!$routeFile) {
-			return $this->handled(false);
-		}
 		ob_start();
-		$routeFileResponse = include $routeFile;
+		$routeFileResponse = include $routeFile; // Process route file
 		ob_get_clean();
-		if (!$routeFileResponse) {
-			return $this->handled(false);
-		}
+
+		if (!$routeFileResponse) return false; // No handling if no route file response
+
 		if (is_bool($routeFileResponse)) {
-			return $this->handled($routeFileResponse);
+			return $routeFileResponse; // Return route file response if boolean to continue handling request or not
 		}
+
 		if ($routeFileResponse instanceof Error) {
-			$routeFileResponse->handle();
-			return $this->handled(true);
+			$routeFileResponse->handle(); // Handle error if route file response is an error page
+			return true;
 		}
+
 		if (is_callable($routeFileResponse)) {
-			$routeFileResponse();
-			return $this->handled(false);
+			$routeFileResponse(); // Call route file response if callable
+			return false;
 		}
-		return $this->handled(false);
+
+		return false; // Default continue handling request
 	}
 
-	private function handled(bool $state): bool
+	private function getRouteFile(string $path): string|null
 	{
-		$this->handled = $state;
-		return $state;
-	}
-
-	private function getRouteFile(string $path): string|false
-	{
+		// Find route file in directory structure up to 100 directories deep
 		for ($iteration = 0; $iteration < 100; $iteration++) {
-			$file = $path . "/_route.php";
-			if (file_exists($file)) return $file;
-			if ($path == $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC) break;
-			$path = dirname($path) . "/";
+			$file = "{$path}/_route.php"; // Construct route file path
+			if (file_exists($file)) return $file; // Check if route file exists
+			if ($path == $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC) break; // Stop if public path reached
+			$path = dirname($path) . "/"; // Move up one directory
 		}
-		return false;
+		return null; // Return null if no route file found
 	}
 }
