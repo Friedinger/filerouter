@@ -12,7 +12,9 @@ by Friedinger (friedinger.org)
 namespace FileRouter;
 
 /**
- * Request class contains functions to get information and data from the current request.
+ * Class Request
+ *
+ * Contains functions to get information and data from the current request.
  */
 class Request
 {

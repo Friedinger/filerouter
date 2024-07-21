@@ -12,7 +12,9 @@ by Friedinger (friedinger.org)
 namespace FileRouter;
 
 /**
- * Router class contains functions to redirect request to correct file and controller.
+ * Class Router
+ *
+ * Contains functions to redirect request to correct file and controller.
  */
 class Router
 {

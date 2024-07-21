@@ -12,7 +12,9 @@ by Friedinger (friedinger.org)
 namespace FileRouter;
 
 /**
- * Misc class contains miscellaneous utility functions.
+ * Class Misc
+ *
+ * Contains miscellaneous utility functions.
  */
 final class Misc
 {
