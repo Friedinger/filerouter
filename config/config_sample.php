@@ -23,18 +23,6 @@ final class Config
 	const PATH_FOOTER = "/../modules/footer.php"; // Path to the footer file
 	const PATH_ERROR = "/../modules/error.php"; // Path to the error file
 
-	// Errors
-	const ERROR_FATAL = "<h1>Error</h1><p>An error occurred in the request.</p><p>Please contact the webmaster</p>"; // Fatal error message if error page can't be loaded
-	const ERROR_MESSAGE = [ // Default error messages depending on error code
-		400 => "Bad Request",
-		401 => "Unauthorized",
-		403 => "Forbidden",
-		404 => "Not Found",
-		405 => "Method Not Allowed",
-		500 => "Internal Server Error",
-		"default" => "Error",
-	];
-
 	// Sessions
 	const SESSION = true; // Enable session handling
 	const SESSION_NAME = "FileRouter"; // Name of the session
@@ -54,4 +42,6 @@ final class Config
 
 	// Other
 	const ALLOW_PAGE_PHP = true; // Allow to execute php code in pages. Warning: This can be a security risk if not handled carefully.
+	const IMAGE_RESIZE_QUERY = "res"; // Query parameter to specify the width of an image to resize it
+	const ERROR_FATAL = "<h1>Error</h1><p>An error occurred in the request.</p><p>Please contact the webmaster</p>"; // Fatal error message if error page can't be loaded
 }

@@ -31,10 +31,10 @@ class ControllerImage
 	 */
 	public static function redirect(string $filePath): bool
 	{
-		if (!class_exists("GdImage")) return false; # Check if GD library is available
-		$imageType = Misc::getMime($filePath); # Get mime type of file
+		if (!class_exists("GdImage")) return false; // Check if GD library is available
+		$imageType = Misc::getMime($filePath); // Get mime type of file
 
-		# Create image based on mime type, resize it and output it
+		// Create image based on mime type, resize it and output it
 		if ($imageType == "image/png") {
 			$image = imagecreatefrompng($filePath);
 			return imagepng(self::resize($image));
@@ -56,15 +56,15 @@ class ControllerImage
 
 	private static function resize(GdImage $image): GdImage
 	{
-		$image = imagescale($image, self::getWidth($image)); # Resize image to requested width
-		imagesavealpha($image, true); # Save alpha channel
+		$image = imagescale($image, self::getWidth($image)); // Resize image to requested width
+		imagesavealpha($image, true); // Save alpha channel
 		return $image;
 	}
 
 	private static function getWidth(GdImage $image): int
 	{
-		$originalWidth = imagesx($image) ?? 0; # Get original width of image
-		$requestWidth = Request::get("res") ?? $originalWidth; # Get requested width from query parameter
-		return min($originalWidth, $requestWidth); # Return requested width if smaller than original width
+		$originalWidth = imagesx($image) ?? 0; // Get original width of image
+		$requestWidth = Request::get(Config::IMAGE_RESIZE_QUERY) ?? $originalWidth; // Get requested width from query parameter
+		return min($originalWidth, $requestWidth); // Return requested width if smaller than original width
 	}
 }
