@@ -29,6 +29,9 @@ class ControllerHtml
 		$content = new Output($filePath);
 		$content = self::handle($content);
 
+		// Handle custom function from route file
+		$content = Proxy::handleCustom($content);
+
 		// Print handled content
 		$content->print();
 		return true;

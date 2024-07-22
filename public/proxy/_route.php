@@ -1,3 +1,5 @@
 <?php
-echo "This text is set in the <i>_route.php</i> file";
-return false;
+return function (FileRouter\Output $content): FileRouter\Output {
+	$content->replaceNodeContent("p", "Route File");
+	return $content;
+};

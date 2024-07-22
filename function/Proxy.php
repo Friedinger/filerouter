@@ -18,6 +18,8 @@ namespace FileRouter;
  */
 class Proxy
 {
+	private static $handleCustom;
+
 	/**
 	 * Loads and processes route file.
 	 * Determines based on route file response if request handling should continue or not.
@@ -40,11 +42,30 @@ class Proxy
 		}
 
 		if (is_callable($routeFileResponse)) {
-			$routeFileResponse(); // Call route file response if callable
+			self::$handleCustom = $routeFileResponse; // Set custom route file callable and continue handling request
 			return false;
 		}
 
 		return false; // Default continue handling request
+	}
+
+	/**
+	 * Handles custom route file callable.
+	 *
+	 * @param Output $content Content to handle.
+	 * @return Output Handled content.
+	 */
+	public static function handleCustom(Output $content): Output
+	{
+		$handleCustom = self::$handleCustom ?? null; // Get custom route file callable if set
+		if (isset($handleCustom)) {
+			try {
+				$content = $handleCustom($content); // Handle custom route file callable
+			} catch (\Throwable $e) {
+				throw new Error(500, "Error in route file callable: {$e->getMessage()}"); // Error 500 if error in route file callable
+			}
+		}
+		return $content; // Return handled content
 	}
 
 	private function getRouteFile(string $path): string|null
