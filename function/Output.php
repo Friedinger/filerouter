@@ -95,7 +95,7 @@ class Output
 	 * @param string $content The new content to replace the nodes with.
 	 * @return void
 	 */
-	public function replaceNodeContent(string $tag, string $content): void
+	public function replaceContent(string $tag, string $content): void
 	{
 		$tag = strtolower($tag);
 		$nodeList = $this->dom->getElementsByTagName($tag); // Get nodes with tag
@@ -119,18 +119,21 @@ class Output
 	 * @param string|null $tagName The name of the HTML tag to retrieve the content from. If null, the root tag name will be used.
 	 * @return string|null The content of the HTML node as a string, or null if the node does not exist.
 	 */
-	public function getNodeContent(string $tagName = null): string|null
+	public function getContent(string ...$tags): string|null
 	{
-		if (is_null($tagName)) $tagName = $this->dom->documentElement->tagName; // Get root tag name if no tag name is given
+		if (is_null($tags)) $tags = [$this->dom->documentElement->tagName]; // Get root tag name if no tag name is given
 
-		$node = $this->dom->getElementsByTagName($tagName)->item(0); // Get first node with tag name
-		if (!$node) return null;
-
-		$dom = new DOMDocument();
-		foreach ($node->childNodes as $child) {
-			$dom->appendChild($dom->importNode($child, true)); // Import child nodes to new dom
+		$dom = $this->dom;
+		foreach ($tags as $tag) {
+			$node = $dom->getElementsByTagName($tag)->item(0); // Get first node with tag name
+			if (!$node) return null;
+			$domNew = new DOMDocument();
+			foreach ($node->childNodes as $child) {
+				$domNew->appendChild($domNew->importNode($child, true)); // Import child nodes to new dom
+			}
+			$dom = $domNew;
 		}
-		return str_replace("%20", " ", $dom->saveHTML()); // Return html content as string
+		return trim(str_replace("%20", " ", $dom->saveHTML())); // Return html content as string
 	}
 
 	/**
@@ -151,8 +154,6 @@ class Output
 
 		return $this->getNodeContentArrayRecursive($node); // Return content as array by getting content recursively
 	}
-
-
 
 	private function replaceNode(string $tag, string $content): void
 	{

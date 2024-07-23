@@ -55,14 +55,24 @@ class Proxy
 	 * @param Output $content Content to handle.
 	 * @return Output Handled content.
 	 */
-	public static function handleCustom(Output $content): Output
+	public static function handleCustom(Output $content, Output $settings): Output
 	{
 		$handleCustom = self::$handleCustom ?? null; // Get custom route file callable if set
 		if (isset($handleCustom)) {
-			try {
-				$content = $handleCustom($content); // Handle custom route file callable
-			} catch (\Throwable $e) {
-				throw new Error(500, "Error in route file callable: {$e->getMessage()}"); // Error 500 if error in route file callable
+			$parameters = [[$content, $settings], [$content], []]; // Define parameter combinations
+			$success = false; // Flag indicating if callable was successful
+			foreach ($parameters as $parameter) {
+				try {
+					$return = call_user_func_array($handleCustom, $parameter); // Call function with parameters
+					if ($return instanceof Output) $content = $return; // Set content to return value if output
+					$success = true;
+					break;
+				} catch (\Throwable $e) {
+					// Continue with next parameter combination if callable failed
+				}
+			}
+			if (!$success) {
+				throw new Error(500, "Error in route file callable: {$e->getMessage()}"); // Error 500 if callable failed with all parameter combinations
 			}
 		}
 		return $content; // Return handled content

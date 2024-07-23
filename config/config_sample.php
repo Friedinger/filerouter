@@ -7,7 +7,7 @@ A simple php router that allows to run code before accessing a file while keepin
 
 by Friedinger (friedinger.org)
 
-Version: 2.1.1
+Version: 2.1.2
 
 */
 

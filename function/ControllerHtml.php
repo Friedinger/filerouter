@@ -18,6 +18,8 @@ namespace FileRouter;
  */
 class ControllerHtml
 {
+	private static Output $settings;
+
 	/**
 	 * Outputs the content of specified HTML or PHP file to the browser after processing it.
 	 *
@@ -27,10 +29,10 @@ class ControllerHtml
 	public static function redirect(string $filePath): bool
 	{
 		$content = new Output($filePath);
-		$content = self::handle($content);
+		$content = self::handleSettings($content); // Get and store settings
 
-		// Handle custom function from route file
-		$content = Proxy::handleCustom($content);
+		$content = Proxy::handleCustom($content, self::$settings); // Handle custom function from route file
+		$content = self::handle($content); // Handle content of the web page
 
 		// Print handled content
 		$content->print();
@@ -48,33 +50,31 @@ class ControllerHtml
 	 */
 	public static function handle(Output $content): Output
 	{
-		// Get settings from content file
-		$settings = $content->getNodeContentArray("settings");
-		$content->replaceAll("settings", "");
+		$content = self::handleSettings($content); // Get and store settings if not already set
 
 		// Handle head, header and footer
-		$content = self::handleHead($content, $settings);
+		$content = self::handleHead($content);
 		$content = self::handleHeader($content);
 		$content = self::handleFooter($content);
 
 		return $content;
 	}
 
-	private static function handleHead(Output $content, array $settings): Output
+	private static function handleHead(Output $content): Output
 	{
 		$head = new Output($_SERVER["DOCUMENT_ROOT"] . Config::PATH_HEAD);
 
 		// Set page title
-		if (!isset($settings["title"])) {
+		if (!is_null(self::$settings->getContent("title"))) {
 			// Set title from h1 with prefix and suffix
-			$title = $content->getNodeContent("h1");
+			$title = $content->getContent("h1");
 			if (!empty(Config::TITLE_PREFIX)) {
 				$title = Config::TITLE_PREFIX . Config::TITLE_SEPARATOR . $title;
 			}
 			if (!empty(Config::TITLE_SUFFIX)) {
 				$title = $title . Config::TITLE_SEPARATOR . Config::TITLE_SUFFIX;
 			}
-		} elseif (empty($settings["title"])) {
+		} elseif (empty(self::$settings->getContent("title"))) {
 			// Empty title just use prefix and suffix
 			$title = "";
 			if (!empty(Config::TITLE_PREFIX)) {
@@ -88,22 +88,21 @@ class ControllerHtml
 			}
 		} else {
 			// set title from settings with prefix and suffix
-			$title = $settings["title"];
+			$title = self::$settings->getContent("title");
 		}
-		$head->replaceNodeContent("title", $title);
-
-		$replace = "<html><head>" . $head->getNodeContent("head") . "</head><body>" . $content->getNodeContent("body") . "</body></html>";
+		$head->replaceContent("title", $title);
+		$replace = "<html><head>" . $head->getContent("head") . "</head><body>" . $content->getContent("body") . "</body></html>";
 		return new Output($replace, true);
 	}
 
 	private static function handleHeader(Output $content): Output
 	{
-		$contentHeader = $content->getNodeContent("header");
+		$contentHeader = $content->getContent("header");
 		if (is_null($contentHeader)) {
 			// Load header from modules file
 			$header = new Output($_SERVER["DOCUMENT_ROOT"] . Config::PATH_HEADER);
-			$replace = $header->getNodeContent("body") . $content->getNodeContent("body");
-			$content->replaceNodeContent("body", $replace);
+			$replace = $header->getContent("body") . $content->getContent("body");
+			$content->replaceContent("body", $replace);
 			return $content;
 		} elseif (empty(trim($contentHeader))) {
 			// Remove header
@@ -117,12 +116,12 @@ class ControllerHtml
 
 	private static function handleFooter(Output $content): Output
 	{
-		$contentFooter = $content->getNodeContent("footer");
+		$contentFooter = $content->getContent("footer");
 		if (is_null($contentFooter)) {
 			// Load footer from modules file
 			$footer = new Output($_SERVER["DOCUMENT_ROOT"] . Config::PATH_FOOTER);
-			$replace = $content->getNodeContent("body") . $footer->getNodeContent("body");
-			$content->replaceNodeContent("body", $replace);
+			$replace = $content->getContent("body") . $footer->getContent("body");
+			$content->replaceContent("body", $replace);
 			return $content;
 		} elseif (empty(trim($contentFooter))) {
 			// Remove footer
@@ -132,5 +131,14 @@ class ControllerHtml
 			// Keep footer set in content
 			return $content;
 		}
+	}
+
+	private static function handleSettings(Output $content): Output
+	{
+		if (!isset(self::$settings)) {
+			self::$settings = new Output($content->getContent("settings") ?? " ", true);
+			$content->replaceAll("settings", "");
+		}
+		return $content;
 	}
 }
