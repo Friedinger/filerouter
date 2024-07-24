@@ -57,6 +57,7 @@ class Router
 	 */
 	public static function redirect(string $uri): void
 	{
+		$uri = Misc::prepareUri($uri); // Prepare uri
 		header("Location: /$uri"); // Set location header
 		exit(); // Stop further execution
 	}
