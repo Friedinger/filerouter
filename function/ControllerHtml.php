@@ -26,13 +26,13 @@ class ControllerHtml
 	 * @param string $filePath The file path to redirect to.
 	 * @return bool Returns true if the redirection is successful, false otherwise.
 	 */
-	public static function redirect(string $filePath): bool
+	public static function handle(string $filePath): bool
 	{
 		$content = new Output($filePath);
 		$content = self::handleSettings($content); // Get and store settings
 
 		$content = Proxy::handleCustom($content, self::$settings); // Handle custom function from route file
-		$content = self::handle($content); // Handle content of the web page
+		$content = self::handleHtml($content); // Handle content of the web page
 
 		// Print handled content
 		$content->print();
@@ -48,7 +48,7 @@ class ControllerHtml
 	 * @param Output $content The content of the web page.
 	 * @return Output The processed content of the web page.
 	 */
-	public static function handle(Output $content): Output
+	public static function handleHtml(Output $content): Output
 	{
 		$content = self::handleSettings($content); // Get and store settings if not already set
 
@@ -65,7 +65,7 @@ class ControllerHtml
 		$head = new Output($_SERVER["DOCUMENT_ROOT"] . Config::PATH_HEAD);
 
 		// Set page title
-		if (!is_null(self::$settings->getContent("title"))) {
+		if (is_null(self::$settings->getContent("title"))) {
 			// Set title from h1 with prefix and suffix
 			$title = $content->getContent("h1");
 			if (!empty(Config::TITLE_PREFIX)) {
@@ -90,6 +90,7 @@ class ControllerHtml
 			// set title from settings with prefix and suffix
 			$title = self::$settings->getContent("title");
 		}
+
 		$head->replaceContent("title", $title);
 		$replace = "<html><head>" . $head->getContent("head") . "</head><body>" . $content->getContent("body") . "</body></html>";
 		return new Output($replace, true);

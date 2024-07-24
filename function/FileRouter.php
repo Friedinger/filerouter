@@ -28,12 +28,12 @@ if (Config::SESSION) {
 
 // Handle route file as proxy of request
 $proxy = new Proxy();
-$proxyHandled = $proxy->handle(Request::filePath());
+$proxyHandled = $proxy->handle();
 if ($proxyHandled) exit; // Stop handling if request was handled by proxy
 
 // Handle request with router
 $router = new Router();
-$routerHandled = $router->handle(Request::filePath());
+$routerHandled = $router->handle();
 if ($routerHandled) exit; // Stop handling if request was handled by router
 
 // Error 404 if request was not handled before

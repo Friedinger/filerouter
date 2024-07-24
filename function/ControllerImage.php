@@ -21,7 +21,7 @@ use \GdImage;
 class ControllerImage
 {
 	/**
-	 * Redirects to the specified image file and outputs a resized version of the image.
+	 * Handles the specified image file and outputs a resized version of the image.
 	 * The width of the resized image can be specified by the query parameter "res".
 	 * If the width is not specified, the original width of the image is used.
 	 * The height of the resized image is calculated based on the aspect ratio of the original image.
@@ -29,7 +29,7 @@ class ControllerImage
 	 * @param string $filePath The path to the image file.
 	 * @return bool Returns true if the image was successfully resized and outputted, false otherwise.
 	 */
-	public static function redirect(string $filePath): bool
+	public static function handle(string $filePath): bool
 	{
 		if (!class_exists("GdImage")) return false; // Check if GD library is available
 		$imageType = Misc::getMime($filePath); // Get mime type of file

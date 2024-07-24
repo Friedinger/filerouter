@@ -54,4 +54,22 @@ final class Misc
 		$extension = pathinfo($filePath, PATHINFO_EXTENSION); // Get file extension
 		return $mimeTypes[$extension] ?? mime_content_type($filePath); // Choose mime type depending on file extension, php mime function as fallback
 	}
+
+	/**
+	 * Prepare URI by removing special characters, parameters, trailing slash, index.php and start slash.
+	 *
+	 * @param string $uri The URI to prepare.
+	 * @return string The prepared URI.
+	 */
+	public static function prepareUri(string $uri): string
+	{
+		$uri = htmlspecialchars(strtolower(urldecode($uri))); // Remove special chars from request
+		$uri = parse_url($uri, PHP_URL_PATH); // Remove parameters
+		$uri = rtrim($uri, "/") . "/"; // Force trailing slash
+		$uri = "/" . ltrim($uri, "/"); // Force start slash
+		$uri = str_replace("/index.php/", "", $uri); // Remove index.php
+		$uri = rtrim($uri, "/"); // Remove trailing slash
+		$uri = ltrim($uri, "/"); // Remove start slash
+		return htmlspecialchars($uri); // Return cleaned URI
+	}
 }

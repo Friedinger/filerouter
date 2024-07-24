@@ -27,25 +27,7 @@ class Request
 	public static function uri(): string
 	{
 		$uri = $_SERVER["REQUEST_URI"]; // Get request URI from server
-		$uri = htmlspecialchars(strtolower(urldecode($uri))); // Remove special chars from request
-		$uri = parse_url($uri, PHP_URL_PATH); // Remove parameters
-		$uri = rtrim($uri, "/") . "/"; // Force trailing slash
-		$uri = "/" . ltrim($uri, "/"); // Force start slash
-		$uri = str_replace("/index.php/", "", $uri); // Remove index.php
-		$uri = rtrim($uri, "/"); // Remove trailing slash
-		$uri = ltrim($uri, "/"); // Remove start slash
-		return htmlspecialchars($uri); // Return cleaned URI
-	}
-
-	/**
-	 * Returns the file path of the current request.
-	 * Uses the document root, public path, and the URI of the current request.
-	 *
-	 * @return string The file path of the current request.
-	 */
-	public static function filePath(): string
-	{
-		return $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC . Request::uri(); // Combine document root, public path and URI to get file path
+		return Misc::prepareUri($uri); // Prepare URI
 	}
 
 	/**

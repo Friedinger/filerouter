@@ -24,7 +24,7 @@ class ControllerDefault
 	 * @param string $filePath The path of the file to output.
 	 * @return bool Returns true if the file was successfully read and displayed, false otherwise.
 	 */
-	public static function redirect(string $filePath): bool
+	public static function handle(string $filePath): bool
 	{
 		return (bool) readfile($filePath);
 	}

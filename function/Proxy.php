@@ -26,9 +26,15 @@ class Proxy
 	 *
 	 * @return bool True if request handling should continue, false if not.
 	 */
-	public function handle(string $path): bool
+	public function handle(string $uri = null): bool
 	{
-		$routeFile = $this->getRouteFile($path); // Get route file
+		if ($uri == null) {
+			$uri = Request::uri(); // Get request uri if not set
+		} else {
+			$uri = Misc::prepareUri($uri); // Prepare uri
+		}
+
+		$routeFile = $this->getRouteFile($uri); // Get route file
 		if (!$routeFile) return false; // No handling if no route file
 
 		ob_start();
@@ -80,6 +86,8 @@ class Proxy
 
 	private function getRouteFile(string $path): string|null
 	{
+		$path = $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC . $path; // Combine document root, public path and URI to get file path
+
 		// Find route file in directory structure up to 100 directories deep
 		for ($iteration = 0; $iteration < 100; $iteration++) {
 			$file = "{$path}/_route.php"; // Construct route file path

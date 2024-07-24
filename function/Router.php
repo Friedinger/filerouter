@@ -24,9 +24,15 @@ class Router
 	 * @param string $path Path of requested file.
 	 * @return bool True if request was handled, false if not.
 	 */
-	public function handle(string $path): bool
+	public static function handle(string $uri = null): bool
 	{
-		$path = $this->searchPath($path);
+		if ($uri == null) {
+			$uri = Request::uri(); // Get request uri if not set
+		} else {
+			$uri = Misc::prepareUri($uri); // Prepare uri
+		}
+
+		$path = self::searchPath($uri); // Search for path in public directory
 
 		// Get mime type and set it as header content type
 		$mime = Misc::getMime($path);
@@ -34,18 +40,31 @@ class Router
 
 		// Handle different mime types
 		if ($mime == "text/html") {
-			$handled = ControllerHtml::redirect($path);
+			$handled = ControllerHtml::handle($path);
 			if ($handled) return true;
 		}
 		if (str_starts_with($mime, "image/")) {
-			$handled = ControllerImage::redirect($path);
+			$handled = ControllerImage::handle($path);
 			if ($handled) return true;
 		}
-		return ControllerDefault::redirect($path);
+		return ControllerDefault::handle($path);
 	}
 
-	private function searchPath(string $path): string
+	/**
+	 * Redirects to specified URI.
+	 *
+	 * @param string $uri URI to redirect to.
+	 */
+	public static function redirect(string $uri): void
 	{
+		header("Location: /$uri"); // Set location header
+		exit(); // Stop further execution
+	}
+
+	private static function searchPath(string $uri): string
+	{
+		$path = $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC . $uri; // Combine document root, public path and URI to get file path
+
 		if (is_dir($path)) $path = rtrim($path, "/") . "/index.php"; // If path is a directory, add index.php
 
 		$directory = dirname($path); // Get directory of path

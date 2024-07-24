@@ -46,7 +46,7 @@ class Error extends \Exception
 
 		$output->replaceAll("error-code", htmlspecialchars($errorCode)); // Replace error code placeholder
 		$output->replaceAll("error-message", $errorMessage); // Replace error message placeholder
-		$output = ControllerHtml::handle($output); // Handle html content (e.g. add head, header and footer)
+		$output = ControllerHtml::handleHtml($output); // Handle html content (e.g. add head, header and footer)
 		$output->print(); // Print output
 		exit; // Stop further execution
 	}
