@@ -49,7 +49,8 @@ class Output
 			$output = file_get_contents($content);
 		}
 
-		$this->dom->loadHTML(mb_convert_encoding($output, "HTML-ENTITIES", "UTF-8"), LIBXML_NOERROR); // Load html content into dom
+		$output = mb_convert_encoding($output, "HTML-ENTITIES", "UTF-8");
+		$this->dom->loadHTML($output, LIBXML_NOERROR); // Load html content into dom
 	}
 
 	/**
@@ -133,7 +134,10 @@ class Output
 			}
 			$dom = $domNew;
 		}
-		return trim(str_replace("%20", " ", $dom->saveHTML())); // Return html content as string
+		$content = $dom->saveHTML(); // Save html content from dom
+		$content = mb_convert_encoding($content, "HTML-ENTITIES", "UTF-8");
+		$content = str_replace("%20", " ", $content);
+		return trim($content); // Return html content as string
 	}
 
 	/**

@@ -90,7 +90,8 @@ class ControllerHtml
 			// set title from settings with prefix and suffix
 			$title = self::$settings->getContent("title");
 		}
-
+		$title = strip_tags($title);
+		$title = mb_convert_encoding($title, "UTF-8", ["HTML-ENTITIES"]);
 		$head->replaceContent("title", $title);
 		$replace = "<html><head>" . $head->getContent("head") . "</head><body>" . $content->getContent("body") . "</body></html>";
 		return new Output($replace, true);
