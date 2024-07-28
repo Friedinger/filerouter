@@ -1,15 +1,9 @@
-<!DOCTYPE html>
-<html lang="de">
+<settings>
+	<title></title>
+</settings>
 
-<head>
-	<?php FileRouter\Modules::head("") ?>
-
-<body>
-	<?php FileRouter\Modules::header() ?>
-	<main>
-		<p>Main</p>
-	</main>
-	<?php FileRouter\Modules::footer() ?>
-</body>
-
-</html>
+<main>
+	<h1>Heading</h1>
+	<p>Main</p>
+	<p>UTF8: äöüß€¥♫♠♣♥♦</p>
+</main>

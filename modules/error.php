@@ -1,23 +1,16 @@
-<?php
-header('Content-Type: text/html; charset=utf-8');
-?>
-<!DOCTYPE html>
-<html lang="de">
+<settings>
+	<error-messages>
+		<error-400>Bad Request</error-400>
+		<error-401>Unauthorized</error-401>
+		<error-403>Forbidden</error-403>
+		<error-404>Not Found</error-404>
+		<error-405>Method Not Allowed</error-405>
+		<error-500>Internal Server Error</error-500>
+		<default>An error occurred</default>
+	</error-messages>
+</settings>
 
-<?php FileRouter\Modules::head("Error " . FileRouter\Output::$status) ?>
-
-<body>
-	<?php FileRouter\Modules::header() ?>
-	<main>
-		<?php
-		print match (FileRouter\Output::$status) {
-			"403" => "<h1>Zugriff verweigert</h1><p>Error 403</p>",
-			"404" => "<h1>Die Seite wurde nicht gefunden</h1><p>Error 404</p>",
-			default => "<h1>Error " . FileRouter\Output::$status . "</h1>",
-		};
-		?>
-	</main>
-	<?php FileRouter\Modules::footer() ?>
-</body>
-
-</html>
+<main>
+	<h1>Error <error-code /></h1>
+	<p><error-message /></p>
+</main>

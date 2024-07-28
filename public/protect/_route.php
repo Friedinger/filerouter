@@ -1,2 +1,2 @@
 <?php
-return 404; // HTTP error code that is thrown
+throw new FileRouter\Error(403);
