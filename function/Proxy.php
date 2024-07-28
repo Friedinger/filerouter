@@ -37,11 +37,9 @@ class Proxy
 		$routeFile = $this->getRouteFile($uri); // Get route file
 		if (!$routeFile) return false; // No handling if no route file
 
-		ob_start();
 		$routeFileResponse = include $routeFile; // Process route file
-		ob_get_clean();
 
-		if (!$routeFileResponse) return false; // No handling if no route file response
+		if (!isset($routeFileResponse)) return false; // No handling if no route file response
 
 		if (is_bool($routeFileResponse)) {
 			return $routeFileResponse; // Return route file response if boolean to continue handling request or not
