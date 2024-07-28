@@ -1,5 +1,5 @@
 # IDE-specific files
-/.vscode
+.vscode/
 .idea/
 
 # OS-specific files
@@ -15,8 +15,8 @@ dist/
 build/
 
 # Configuration files
-/config/*
-!/config/config_sample.php
+config/*
+!config/config_sample.php
 .env
 *.local
 
@@ -24,4 +24,4 @@ build/
 *.log
 
 # Local testing files
-*/test/
+*test/
