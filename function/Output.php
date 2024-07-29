@@ -89,6 +89,22 @@ class Output
 	}
 
 	/**
+	 * Replaces all occurrences of a given tag with the specified content.
+	 * This method replaces both nodes and attributes with the given tag.
+	 * Replaces the nodes itself, not only the content of them.
+	 * The tag is case-insensitive.
+	 * The content is sanitized to prevent XSS attacks.
+	 *
+	 * @param string $tag The tag to be replaced.
+	 * @param string $content The content to replace the tag with.
+	 * @return void
+	 */
+	public function replaceAllSafe(string $tag, string $content): void
+	{
+		$this->replaceAll($tag, htmlspecialchars($content));
+	}
+
+	/**
 	 * Replaces the content of nodes with a specified tag with new content.
 	 * Preserves the tag and attributes of the nodes.
 	 * The tag is case-insensitive.
