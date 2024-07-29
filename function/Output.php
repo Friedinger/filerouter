@@ -13,6 +13,7 @@ namespace FileRouter;
 
 use DOMDocument;
 use DOMNode;
+use DOMXPath;
 
 /**
  * Class Output
@@ -168,7 +169,7 @@ class Output
 		foreach (iterator_to_array($nodeList) as $node) { // Iterate over nodes with tag
 			foreach ($replacement as $child) {
 				$child = $child->cloneNode(true);
-				$node->parentNode->appendChild($child); // Append content as html nodes to parent node
+				$node->parentNode->insertBefore($child, $node); // Insert content as html nodes before old node
 			}
 			$node->parentNode->removeChild($node); // Remove old node
 		}
@@ -176,13 +177,14 @@ class Output
 
 	private function replaceAttributes(string $tag, string $content): void
 	{
-		$nodeList = $this->dom->getElementsByTagName("*"); // Get all nodes
-		foreach ($nodeList as $node) {
-			foreach (iterator_to_array($node->attributes) as $attribute) {
-				$value = $attribute->value; // Get attribute value
-				if (stripos($value, "<{$tag}") !== false) { // Check if attribute value contains tag
-					$attribute->value = str_ireplace(["<{$tag}></{$tag}>", "<{$tag} />", "<{$tag}/>"], $content, $attribute->nodeValue); // Replace tag with content in attribute value
-				}
+		$xpath = new DOMXPath($this->dom);
+		$query = "//" . "*[@*[contains(., '<" . $tag . "')]]"; // XPath query to find attributes containing the tag
+		$nodes = $xpath->query($query);
+
+		foreach ($nodes as $node) { // Iterate over nodes with attributes containing tag
+			foreach ($node->attributes as $attribute) {
+				// Replace tag with content in attribute value
+				$attribute->value = str_replace(["<{$tag}></{$tag}>", "<{$tag} />", "<{$tag}/>"], $content, $attribute->value);
 			}
 		}
 	}
