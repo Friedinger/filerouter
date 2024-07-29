@@ -177,14 +177,15 @@ class Output
 
 	private function replaceAttributes(string $tag, string $content): void
 	{
+		// Find nodes with attributes containing tag
 		$xpath = new DOMXPath($this->dom);
-		$query = "//" . "*[@*[contains(., '<" . $tag . "')]]"; // XPath query to find attributes containing the tag
+		$query = "//" . "*[@*[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" . strtolower($tag) . "')]]";
 		$nodes = $xpath->query($query);
 
 		foreach ($nodes as $node) { // Iterate over nodes with attributes containing tag
 			foreach ($node->attributes as $attribute) {
 				// Replace tag with content in attribute value
-				$attribute->value = str_replace(["<{$tag}></{$tag}>", "<{$tag} />", "<{$tag}/>"], $content, $attribute->value);
+				$attribute->value = str_ireplace(["<{$tag}></{$tag}>", "<{$tag} />", "<{$tag}/>"], $content, $attribute->value);
 			}
 		}
 	}
