@@ -16,7 +16,7 @@ build/
 
 # Configuration files
 config/*
-!config/config_sample.php
+!config/*_sample.*
 .env
 *.local
 
