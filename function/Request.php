@@ -120,12 +120,19 @@ class Request
 	}
 
 	/**
-	 * Retrieves the current HTTP response code.
+	 * Returns the protocol used for the current request.
 	 *
-	 * @return int The HTTP response code.
+	 * @return string The protocol used for the current request. It can be either "http" or "https".
 	 */
-	public static function responseCode(): int
+	public static function protocol(): string
 	{
-		return http_response_code(); // Get HTTP response code with php function
+		if ((!empty($_SERVER["REQUEST_SCHEME"]) && $_SERVER["REQUEST_SCHEME"] == "https") ||
+			(!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") ||
+			(!empty($_SERVER["SERVER_PORT"]) && $_SERVER["SERVER_PORT"] == "443")
+		) {
+			return "https";
+		} else {
+			return "http";
+		}
 	}
 }

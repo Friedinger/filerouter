@@ -13,7 +13,7 @@ Version: 2.1.4
 
 namespace FileRouter;
 
-final class Config
+class Config
 {
 	// Paths (relative to the server root)
 	const PATH_PUBLIC = "/../public/"; // Path to the public folder
