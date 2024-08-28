@@ -35,6 +35,32 @@ final class Misc
 	}
 
 	/**
+	 * Generates a CSRF token and stores it in the session.
+	 * The token is a 64-character hexadecimal string.
+	 *
+	 * @return string The generated CSRF token.
+	 */
+	public static function generateCSRFToken(): string
+	{
+		$token = bin2hex(random_bytes(32));
+		Request::setSession($token, "token");
+		return $token;
+	}
+
+	/**
+	 * Verifies a CSRF token by comparing it to the token stored in the session.
+	 *
+	 * @param string $token The token to verify.
+	 * @return bool True if the token is valid, false otherwise.
+	 */
+	public static function verifyCSRFToken(string $token): bool
+	{
+		$verify = hash_equals(Request::session("token"), $token);
+		self::generateCSRFToken();
+		return $verify;
+	}
+
+	/**
 	 * Retrieves the MIME type of a file.
 	 * Uses mime_content_type as default, but also provides a custom list of MIME types based on file extension.
 	 *
