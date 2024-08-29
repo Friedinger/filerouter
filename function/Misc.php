@@ -38,26 +38,26 @@ final class Misc
 	 * Generates a CSRF token and stores it in the session.
 	 * The token is a 64-character hexadecimal string.
 	 *
+	 * @param bool $regenerate Flag indicating if the token should be regenerated.
 	 * @return string The generated CSRF token.
 	 */
-	public static function generateCSRFToken(): string
+	public static function getCsrfToken(): string
 	{
 		$token = bin2hex(random_bytes(32));
-		Request::setSession($token, "token");
+		Request::setSession($token, "csrf-token");
 		return $token;
 	}
 
 	/**
 	 * Verifies a CSRF token by comparing it to the token stored in the session.
+	 * Regenerates the token after verification.
 	 *
 	 * @param string $token The token to verify.
 	 * @return bool True if the token is valid, false otherwise.
 	 */
-	public static function verifyCSRFToken(string $token): bool
+	public static function verifyCsrfToken(string $token): bool
 	{
-		$verify = hash_equals(Request::session("token"), $token);
-		self::generateCSRFToken();
-		return $verify;
+		return hash_equals(Request::session("csrf-token") ?? "", $token);
 	}
 
 	/**

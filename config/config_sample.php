@@ -25,6 +25,7 @@ class Config
 
 	// Sessions
 	const SESSION = true; // Enable session handling
+	const CSRF_GENERATE = true; // Generate a CSRF token
 	const SESSION_NAME = "FileRouter"; // Name of the session
 	const SESSION_COOKIE_PARAMS = [ // Session cookie parameters (https://www.php.net/manual/en/function.session-set-cookie-params.php)
 		"lifetime" => 0,
