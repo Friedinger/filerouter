@@ -58,8 +58,8 @@ class ControllerHtml
 		$content = self::handleFooter($content);
 
 		// Output CSRF token if enabled
-		if (Config::SESSION && Config::CSRF_GENERATE) {
-			$content->replaceAllSafe("csrf-token", Misc::getCsrfToken());
+		if (Config::SESSION && COnfig::CSRF_LENGTH > 0) {
+			$content->replaceAllSafe(Config::CSRF_TEMPLATE, Misc::generateCsrfToken());
 		}
 
 		return $content;

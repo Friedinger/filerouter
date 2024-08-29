@@ -25,7 +25,6 @@ class Config
 
 	// Sessions
 	const SESSION = true; // Enable session handling
-	const CSRF_GENERATE = true; // Generate a CSRF token
 	const SESSION_NAME = "FileRouter"; // Name of the session
 	const SESSION_COOKIE_PARAMS = [ // Session cookie parameters (https://www.php.net/manual/en/function.session-set-cookie-params.php)
 		"lifetime" => 0,
@@ -35,6 +34,11 @@ class Config
 		"httponly" => true,
 		"samesite" => "Strict",
 	];
+
+	// Security
+	const CSRF_TEMPLATE = "csrf-token"; // CSRF token template variable name, also used as session key
+	const CSRF_PARAMETER = "token"; // CSRF token parameter name for get and post requests
+	const CSRF_LENGTH = 64; // Length of the CSRF token, set to 0 to disable CSRF protection
 
 	// Page titles
 	const TITLE_PREFIX = "FileRouter";

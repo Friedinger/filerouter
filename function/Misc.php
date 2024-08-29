@@ -41,9 +41,9 @@ final class Misc
 	 * @param bool $regenerate Flag indicating if the token should be regenerated.
 	 * @return string The generated CSRF token.
 	 */
-	public static function getCsrfToken(): string
+	public static function generateCsrfToken(): string
 	{
-		$token = bin2hex(random_bytes(32));
+		$token = bin2hex(random_bytes(Config::CSRF_LENGTH / 2));
 		Request::setSession($token, "csrf-token");
 		return $token;
 	}
@@ -55,9 +55,34 @@ final class Misc
 	 * @param string $token The token to verify.
 	 * @return bool True if the token is valid, false otherwise.
 	 */
-	public static function verifyCsrfToken(string $token): bool
+	public static function verifyCsrfToken(string|null $token): bool
 	{
-		return hash_equals(Request::session("csrf-token") ?? "", $token);
+		if ($token == null) return false;
+		$verify = hash_equals(Request::session(Config::CSRF_TEMPLATE) ?? "", $token);
+		self::generateCsrfToken();
+		return $verify;
+	}
+
+	/**
+	 * Verifies a CSRF token from a GET request.
+	 * The token is retrieved from the query string.
+	 *
+	 * @return bool True if the token is valid, false otherwise.
+	 */
+	public static function verifyCsrfTokenGet(): bool
+	{
+		return self::verifyCsrfToken(Request::get(Config::CSRF_PARAMETER));
+	}
+
+	/**
+	 * Verifies a CSRF token from a POST request.
+	 * The token is retrieved from the request body.
+	 *
+	 * @return bool True if the token is valid, false otherwise.
+	 */
+	public static function verifyCsrfTokenPost(): bool
+	{
+		return self::verifyCsrfToken(Request::post(Config::CSRF_PARAMETER));
 	}
 
 	/**
