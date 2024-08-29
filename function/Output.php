@@ -201,7 +201,7 @@ class Output
 		foreach ($nodes as $node) { // Iterate over nodes with attributes containing tag
 			foreach ($node->attributes as $attribute) {
 				// Replace tag with content in attribute value
-				$attribute->value = str_ireplace(["<{$tag}></{$tag}>", "<{$tag} />", "<{$tag}/>"], $content, $attribute->value);
+				$attribute->value = str_ireplace(["<{$tag}></{$tag}>", "<{$tag} />", "<{$tag}/>", "<{$tag}>"], $content, $attribute->value);
 			}
 		}
 	}
