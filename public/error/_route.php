@@ -1,5 +1,5 @@
 <?php
 
-echo "No output before exception will be shown.";
+echo "Output will not be displayed if not in debug mode.";
 
 throw new Exception("Test message");

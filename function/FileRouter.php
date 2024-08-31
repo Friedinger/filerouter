@@ -28,7 +28,7 @@ class FileRouter
 		}
 	}
 
-	private function handle()
+	private function handle(): void
 	{
 		// Handle route file as proxy of request
 		$proxy = new Proxy();
@@ -44,22 +44,35 @@ class FileRouter
 		throw new ErrorPage(404);
 	}
 
-	private function setup()
+	private function setup(): void
 	{
+		// Set error logging if enabled in config
+		if (Config::LOG) {
+			$logFile = str_replace("{date}", date("Y-m-d"), Config::LOG_FILE);
+			ini_set("error_log", $_SERVER["DOCUMENT_ROOT"] . Config::LOG_PATH . $logFile); // Set error log file
+		}
+
+		// Set error reporting and display errors
+		if (Config::DEBUG) {
+			error_reporting(E_ALL); // Report all errors
+			ini_set("display_errors", 1); // Display errors
+			ini_set("error_log", null); // Disable error log
+		} else {
+			error_reporting(0); // Report no errors
+			ini_set("display_errors", 0); // Hide errors
+		}
+
 		// Start session if enabled in config
 		if (Config::SESSION) {
 			Misc::session();
 		}
-
-		// Set error log file if enabled in config
-		if (Config::LOG) {
-			$logFile = str_replace("{date}", date("Y-m-d"), Config::LOG_FILE);
-			ini_set("error_log", $_SERVER["DOCUMENT_ROOT"] . Config::LOG_PATH . $logFile);
-		}
 	}
 
-	private function handleException(\Throwable $exception)
+	private function handleException(\Throwable $exception): void
 	{
+		if (CONFIG::DEBUG) {
+			throw $exception; // Rethrow exception if debug mode is enabled
+		}
 		try {
 			ob_end_clean(); // Clear output buffer
 			Misc::log("{$exception->getMessage()} in {$exception->getFile()}({$exception->getLine()})", E_USER_ERROR); // Log unhandled exceptions

@@ -45,7 +45,8 @@ class Config
 	const TITLE_SUFFIX = "";
 	const TITLE_SEPARATOR = " | ";
 
-	// Logging
+	// Error handling and logging
+	const DEBUG = true; // Enable debug mode (shows errors and warnings, disables error logging)
 	const LOG = true; // Enable logging
 	const LOG_PATH = "/../logs/"; // Path to the log folder (relative to the server root)
 	const LOG_FILE = "{date}.log"; // Log file name, {date} will be replaced with the current date in the format "Y-m-d"
