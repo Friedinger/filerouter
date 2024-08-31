@@ -12,6 +12,6 @@ Version: 3.0.0
 */
 
 require_once $_SERVER["DOCUMENT_ROOT"] . "/../config/config.php"; // Load config file
-require_once $_SERVER["DOCUMENT_ROOT"] . "/../function/FileRouter.php"; // Start FileRouter by loading main file
+require_once $_SERVER["DOCUMENT_ROOT"] . "/../function/FileRouter.php"; // Load FileRouter main class
 
-$fileRouter = new FileRouter\FileRouter();
+$fileRouter = new FileRouter\FileRouter(); // Start FileRouter
