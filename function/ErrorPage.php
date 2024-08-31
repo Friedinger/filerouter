@@ -16,7 +16,7 @@ namespace FileRouter;
  *
  * Represents an error with an error code and an error message.
  */
-class Error extends \Exception
+class ErrorPage extends \Exception
 {
 
 	/**

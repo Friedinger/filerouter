@@ -45,6 +45,11 @@ class Config
 	const TITLE_SUFFIX = "";
 	const TITLE_SEPARATOR = " | ";
 
+	// Logging
+	const LOG = true; // Enable logging
+	const LOG_PATH = "/../logs/"; // Path to the log folder (relative to the server root)
+	const LOG_FILE = "{date}.log"; // Log file name, {date} will be replaced with the current date in the format "Y-m-d"
+
 	// Other
 	const ALLOW_PAGE_PHP = true; // Allow to execute php code in pages. Warning: This can be a security risk if not handled carefully.
 	const IMAGE_RESIZE_QUERY = "res"; // Query parameter to specify the width of an image to resize it

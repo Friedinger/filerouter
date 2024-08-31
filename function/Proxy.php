@@ -76,7 +76,7 @@ class Proxy
 				}
 			}
 			if (!$success) {
-				throw new Error(500, "Error in route file callable: {$e->getMessage()}"); // Error 500 if callable failed with all parameter combinations
+				throw new ErrorPage(500, "Error in route file callable: {$e->getMessage()}"); // Error 500 if callable failed with all parameter combinations
 			}
 		}
 		return $content; // Return handled content
