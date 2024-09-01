@@ -46,17 +46,17 @@ class FileRouter
 
 	private function setup(): void
 	{
-		// Set error logging if enabled in config
+		// Set error log file if enabled
 		if (Config::LOG) {
-			$logFile = str_replace("{date}", date("Y-m-d"), Config::LOG_FILE);
-			ini_set("error_log", $_SERVER["DOCUMENT_ROOT"] . Config::LOG_PATH . $logFile); // Set error log file
+			ini_set("log_errors", 1); // Enable error logging
+			ini_set("error_log", Logger::logPath("error")); // Set error log file
 		}
 
 		// Set error reporting and display errors
 		if (Config::DEBUG) {
 			error_reporting(E_ALL); // Report all errors
 			ini_set("display_errors", 1); // Display errors
-			ini_set("error_log", null); // Disable error log
+			ini_set("log_errors", 0); // Disable error log
 		} else {
 			error_reporting(0); // Report no errors
 			ini_set("display_errors", 0); // Hide errors
@@ -75,7 +75,7 @@ class FileRouter
 		}
 		try {
 			ob_end_clean(); // Clear output buffer
-			Misc::log("{$exception->getMessage()} in {$exception->getFile()}({$exception->getLine()})", E_USER_ERROR); // Log unhandled exceptions
+			Logger::logError("{$exception->getMessage()} in {$exception->getFile()}({$exception->getLine()})", E_USER_ERROR); // Log unhandled exceptions
 			throw new ErrorPage(500); // Internal server error if unhandled exception occurred
 		} catch (\Throwable $e) {
 			if (Config::LOG) {

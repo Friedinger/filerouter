@@ -34,24 +34,6 @@ final class Misc
 		return session_id();
 	}
 
-	public static function log(string $message, int $level): void
-	{
-		if (Config::LOG) {
-			$levelName = match ($level) {
-				E_NOTICE => "NOTICE",
-				E_USER_NOTICE => "NOTICE",
-				E_WARNING => "WARNING",
-				E_USER_DEPRECATED => "DEPRECATED",
-				E_DEPRECATED => "DEPRECATED",
-				E_USER_WARNING => "WARNING",
-				E_ERROR => "ERROR",
-				E_USER_ERROR => "ERROR",
-				default => "UNKNOWN",
-			};
-			error_log("$levelName: $message");
-		}
-	}
-
 	/**
 	 * Generates a CSRF token and stores it in the session.
 	 * The token is a 64-character hexadecimal string.
