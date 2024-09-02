@@ -7,7 +7,7 @@ A simple php router that allows to run code before accessing a file while keepin
 
 by Friedinger (friedinger.org)
 
-Version 3.2.0
+Version: 3.2.1
 
 */
 
@@ -81,7 +81,8 @@ class FileRouter
 			if (Config::LOG) {
 				error_log("ERROR {$e->getMessage()} in exception handling"); // Log error message
 			}
-			die(Config::ERROR_FATAL ?? "<h1>Error</h1><p>An error occurred in the request.</p><p>Please contact the webmaster</p>");
+			echo Config::ERROR_FATAL ?? "<h1>Error</h1><p>An error occurred in the request.</p><p>Please contact the webmaster</p>";
+			return;
 		}
 	}
 
