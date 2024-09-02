@@ -59,7 +59,6 @@ class Router
 	{
 		$uri = Misc::prepareUri($uri); // Prepare uri
 		header("Location: /$uri/"); // Set location header
-		exit(); // Stop further execution
 	}
 
 	private static function searchPath(string $uri): string

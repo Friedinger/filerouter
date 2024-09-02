@@ -21,8 +21,8 @@ class FileRouter
 			$this->autoload(); // Autoload classes
 			$this->setup(); // Setup environment
 			$this->handle(); // Handle request
-		} catch (ErrorPage $errorPage) {
-			throw $errorPage; // Rethrow ErrorPage exceptions to display error page
+		} catch (ErrorPage) {
+			// Error page was displayed in ErrorPage exception
 		} catch (\Throwable $exception) {
 			$this->handleException($exception); // Handle unhandled exceptions
 		}
@@ -33,12 +33,12 @@ class FileRouter
 		// Handle route file as proxy of request
 		$proxy = new Proxy();
 		$proxyHandled = $proxy->handle();
-		if ($proxyHandled) exit; // Stop handling if request was handled by proxy
+		if ($proxyHandled) return; // Stop handling if request was handled by proxy
 
 		// Handle request with router
 		$router = new Router();
 		$routerHandled = $router->handle();
-		if ($routerHandled) exit; // Stop handling if request was handled by router
+		if ($routerHandled) return; // Stop handling if request was handled by router
 
 		// Error 404 if request was not handled before
 		throw new ErrorPage(404);
