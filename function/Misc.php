@@ -18,6 +18,8 @@ namespace FileRouter;
  */
 final class Misc
 {
+	private static string $csrfToken;
+
 	/**
 	 * Starts a session if one is not already started and returns the session ID.
 	 * Session name and cookie parameters are set in the Config class.
@@ -43,9 +45,11 @@ final class Misc
 	 */
 	public static function generateCsrfToken(): string
 	{
-		$token = bin2hex(random_bytes(Config::CSRF_LENGTH / 2));
-		Request::setSession($token, "csrf-token");
-		return $token;
+		if (empty(self::$csrfToken)) {
+			self::$csrfToken = bin2hex(random_bytes(Config::CSRF_LENGTH / 2));
+			Request::setSession(self::$csrfToken, Config::CSRF_TEMPLATE);
+		}
+		return self::$csrfToken;
 	}
 
 	/**
