@@ -54,13 +54,14 @@ class Router
 
 	/**
 	 * Redirects to specified URI.
+	 * @deprecated Use "throw new Redirect($uri)" instead.
 	 *
 	 * @param string $uri URI to redirect to.
 	 */
 	public static function redirect(string $uri): void
 	{
-		$uri = Misc::prepareUri($uri); // Prepare uri
-		header("Location: /$uri/"); // Set location header
+		trigger_error("Method " . __METHOD__ . " is deprecated. Use \"throw new Redirect(\$uri)\" instead.", E_USER_DEPRECATED);
+		throw new Redirect($uri);
 	}
 
 	private static function searchPath(string $uri): string
