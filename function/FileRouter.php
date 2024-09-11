@@ -25,6 +25,8 @@ class FileRouter
 			$this->handle(); // Handle request
 		} catch (ErrorPage) {
 			// Error page was displayed in ErrorPage exception
+		} catch (Redirect) {
+			// Redirect was handled in Redirect exception
 		} catch (\Throwable $exception) {
 			$this->handleException($exception); // Handle unhandled exceptions
 		}
