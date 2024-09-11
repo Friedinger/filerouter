@@ -83,15 +83,17 @@ class Proxy
 
 	private function getRouteFile(string $path): string|null
 	{
-		$path = $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC . $path; // Combine document root, public path and URI to get file path
+		// Combine document root, public path and URI to get full path
+		$path = rtrim($_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC . $path, '/');
 
-		// Find route file in directory structure up to 100 directories deep
-		for ($iteration = 0; $iteration < 100; $iteration++) {
+		while ($path != rtrim($_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC, '/')) {
 			$file = "{$path}/_route.php"; // Construct route file path
-			if (file_exists($file)) return $file; // Check if route file exists
-			if ($path == $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC) break; // Stop if public path reached
-			$path = dirname($path) . "/"; // Move up one directory
+			if (file_exists($file)) {
+				return $file; // Check if route file exists
+			}
+			$path = dirname($path); // Move up one directory
 		}
+
 		return null; // Return null if no route file found
 	}
 }
