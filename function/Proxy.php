@@ -20,7 +20,7 @@ namespace FileRouter;
  */
 class Proxy
 {
-	private static $handleCustom;
+	private static mixed $handleCustom;
 
 	/**
 	 * Loads and processes route file.
@@ -63,24 +63,21 @@ class Proxy
 	 */
 	public static function handleCustom(Output $content, Output $settings): Output
 	{
-		$handleCustom = self::$handleCustom ?? null; // Get custom route file callable if set
-		if (isset($handleCustom)) {
-			$parameters = [[$content, $settings], [$content], []]; // Define parameter combinations
-			$success = false; // Flag indicating if callable was successful
-			foreach ($parameters as $parameter) {
-				try {
-					$return = call_user_func_array($handleCustom, $parameter); // Call function with parameters
-					if ($return instanceof Output) $content = $return; // Set content to return value if output
-					$success = true;
-					break;
-				} catch (\Throwable $e) {
-					// Continue with next parameter combination if callable failed
-				}
-			}
-			if (!$success) {
-				throw new ErrorPage(500, "Error in route file callable: {$e->getMessage()}"); // Error 500 if callable failed with all parameter combinations
-			}
-		}
+		// No handling if no custom route file callable set
+		if (!isset(self::$handleCustom)) return $content;
+
+		// Get parameters of custom route file callable
+		$reflection = new \ReflectionFunction(self::$handleCustom);
+		$parameters = array_map(function ($parameter) use ($content, $settings) {
+			return match ($parameter->getName()) {
+				"content" => $content,
+				"settings" => $settings,
+				default => null,
+			};
+		}, $reflection->getParameters());
+
+		$return = call_user_func_array(self::$handleCustom, $parameters); // Call custom route file callable with parameters
+		if ($return instanceof Output) $content = $return; // Set content to return value if output
 		return $content; // Return handled content
 	}
 
