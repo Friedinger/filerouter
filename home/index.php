@@ -9,7 +9,7 @@ https://github.com/Friedinger/FileRouter
 
 by Friedinger (friedinger.org)
 
-Version: 3.2.2
+Version: 3.3.0
 
 */
 
