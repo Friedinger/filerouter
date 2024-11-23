@@ -5,6 +5,8 @@
 FileRouter
 A simple php router that allows to run code before accessing a file while keeping the file structure as the url structure.
 
+https://github.com/Friedinger/FileRouter
+
 by Friedinger (friedinger.org)
 
 */
@@ -56,6 +58,11 @@ class ControllerHtml
 		$content = self::handleHead($content);
 		$content = self::handleHeader($content);
 		$content = self::handleFooter($content);
+
+		// Output CSRF token if enabled
+		if (Config::SESSION && Config::CSRF_LENGTH > 0) {
+			$content->replaceAllSafe(Config::CSRF_TEMPLATE, Misc::generateCsrfToken());
+		}
 
 		return $content;
 	}

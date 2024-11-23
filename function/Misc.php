@@ -5,6 +5,8 @@
 FileRouter
 A simple php router that allows to run code before accessing a file while keeping the file structure as the url structure.
 
+https://github.com/Friedinger/FileRouter
+
 by Friedinger (friedinger.org)
 
 */
@@ -18,6 +20,8 @@ namespace FileRouter;
  */
 final class Misc
 {
+	private static string $csrfToken;
+
 	/**
 	 * Starts a session if one is not already started and returns the session ID.
 	 * Session name and cookie parameters are set in the Config class.
@@ -32,6 +36,59 @@ final class Misc
 			session_start();
 		}
 		return session_id();
+	}
+
+	/**
+	 * Generates a CSRF token and stores it in the session.
+	 * The token is a 64-character hexadecimal string.
+	 *
+	 * @param bool $regenerate Flag indicating if the token should be regenerated.
+	 * @return string The generated CSRF token.
+	 */
+	public static function generateCsrfToken(): string
+	{
+		if (empty(self::$csrfToken)) {
+			self::$csrfToken = bin2hex(random_bytes(Config::CSRF_LENGTH / 2));
+			Request::setSession(self::$csrfToken, Config::CSRF_TEMPLATE);
+		}
+		return self::$csrfToken;
+	}
+
+	/**
+	 * Verifies a CSRF token by comparing it to the token stored in the session.
+	 * Regenerates the token after verification.
+	 *
+	 * @param string $token The token to verify.
+	 * @return bool True if the token is valid, false otherwise.
+	 */
+	public static function verifyCsrfToken(string|null $token): bool
+	{
+		if ($token == null) return false;
+		$verify = hash_equals(Request::session(Config::CSRF_TEMPLATE) ?? "", $token);
+		self::generateCsrfToken();
+		return $verify;
+	}
+
+	/**
+	 * Verifies a CSRF token from a GET request.
+	 * The token is retrieved from the query string.
+	 *
+	 * @return bool True if the token is valid, false otherwise.
+	 */
+	public static function verifyCsrfTokenGet(): bool
+	{
+		return self::verifyCsrfToken(Request::get(Config::CSRF_PARAMETER));
+	}
+
+	/**
+	 * Verifies a CSRF token from a POST request.
+	 * The token is retrieved from the request body.
+	 *
+	 * @return bool True if the token is valid, false otherwise.
+	 */
+	public static function verifyCsrfTokenPost(): bool
+	{
+		return self::verifyCsrfToken(Request::post(Config::CSRF_PARAMETER));
 	}
 
 	/**

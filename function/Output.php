@@ -5,6 +5,8 @@
 FileRouter
 A simple php router that allows to run code before accessing a file while keeping the file structure as the url structure.
 
+https://github.com/Friedinger/FileRouter
+
 by Friedinger (friedinger.org)
 
 */
@@ -13,6 +15,7 @@ namespace FileRouter;
 
 use DOMDocument;
 use DOMNode;
+use DOMXPath;
 
 /**
  * Class Output
@@ -48,8 +51,7 @@ class Output
 			// Get content from file without processing php
 			$output = file_get_contents($content);
 		}
-
-		$output = mb_convert_encoding($output, "HTML-ENTITIES", "UTF-8");
+		$output = mb_encode_numericentity($output, [0x80, 0x10FFFF, 0, ~0], "UTF-8");
 		$this->dom->loadHTML($output, LIBXML_NOERROR); // Load html content into dom
 	}
 
@@ -85,6 +87,22 @@ class Output
 		$tag = strtolower($tag);
 		$this->replaceNode($tag, $content); // Replace nodes with tag
 		$this->replaceAttributes($tag, $content); // Replace attributes with tag
+	}
+
+	/**
+	 * Replaces all occurrences of a given tag with the specified content.
+	 * This method replaces both nodes and attributes with the given tag.
+	 * Replaces the nodes itself, not only the content of them.
+	 * The tag is case-insensitive.
+	 * The content is sanitized to prevent XSS attacks.
+	 *
+	 * @param string $tag The tag to be replaced.
+	 * @param string $content The content to replace the tag with.
+	 * @return void
+	 */
+	public function replaceAllSafe(string $tag, string $content): void
+	{
+		$this->replaceAll($tag, htmlspecialchars($content));
 	}
 
 	/**
@@ -135,7 +153,7 @@ class Output
 			$dom = $domNew;
 		}
 		$content = $dom->saveHTML(); // Save html content from dom
-		$content = mb_convert_encoding($content, "HTML-ENTITIES", "UTF-8");
+		$content = mb_encode_numericentity($content, [0x80, 0x10FFFF, 0, ~0], "UTF-8");
 		$content = str_replace("%20", " ", $content);
 		return trim($content); // Return html content as string
 	}
@@ -168,7 +186,7 @@ class Output
 		foreach (iterator_to_array($nodeList) as $node) { // Iterate over nodes with tag
 			foreach ($replacement as $child) {
 				$child = $child->cloneNode(true);
-				$node->parentNode->appendChild($child); // Append content as html nodes to parent node
+				$node->parentNode->insertBefore($child, $node); // Insert content as html nodes before old node
 			}
 			$node->parentNode->removeChild($node); // Remove old node
 		}
@@ -176,13 +194,15 @@ class Output
 
 	private function replaceAttributes(string $tag, string $content): void
 	{
-		$nodeList = $this->dom->getElementsByTagName("*"); // Get all nodes
-		foreach ($nodeList as $node) {
-			foreach (iterator_to_array($node->attributes) as $attribute) {
-				$value = $attribute->value; // Get attribute value
-				if (stripos($value, "<{$tag}") !== false) { // Check if attribute value contains tag
-					$attribute->value = str_ireplace(["<{$tag}></{$tag}>", "<{$tag} />", "<{$tag}/>"], $content, $attribute->nodeValue); // Replace tag with content in attribute value
-				}
+		// Find nodes with attributes containing tag
+		$xpath = new DOMXPath($this->dom);
+		$query = "//" . "*[@*[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" . strtolower($tag) . "')]]";
+		$nodes = $xpath->query($query);
+
+		foreach ($nodes as $node) { // Iterate over nodes with attributes containing tag
+			foreach ($node->attributes as $attribute) {
+				// Replace tag with content in attribute value
+				$attribute->value = str_ireplace(["<{$tag}></{$tag}>", "<{$tag} />", "<{$tag}/>", "<{$tag}>"], $content, $attribute->value);
 			}
 		}
 	}
@@ -195,7 +215,7 @@ class Output
 		}
 
 		$valueDom = new DOMDocument();
-		$valueDom->loadHTML(mb_convert_encoding($value, 'HTML-ENTITIES', 'UTF-8'), LIBXML_NOERROR); // Load html value into dom
+		$valueDom->loadHTML(mb_encode_numericentity($value, [0x80, 0x10FFFF, 0, ~0], "UTF-8"), LIBXML_NOERROR); // Load html value into dom
 		$importedNodes = [];
 		foreach ($valueDom->getElementsByTagName("body")->item(0)->childNodes as $child) {
 			array_push($importedNodes, $this->dom->importNode($child, true)); // Import nodes from value dom to main dom and add to array

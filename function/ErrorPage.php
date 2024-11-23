@@ -5,6 +5,8 @@
 FileRouter
 A simple php router that allows to run code before accessing a file while keeping the file structure as the url structure.
 
+https://github.com/Friedinger/FileRouter
+
 by Friedinger (friedinger.org)
 
 */
@@ -16,7 +18,7 @@ namespace FileRouter;
  *
  * Represents an error with an error code and an error message.
  */
-class Error extends \Exception
+class ErrorPage extends \Exception
 {
 
 	/**
@@ -34,7 +36,10 @@ class Error extends \Exception
 		http_response_code($errorCode); // Set HTTP status code based on error code
 
 		$pathErrorPage = $_SERVER["DOCUMENT_ROOT"] . Config::PATH_ERROR;
-		if (!file_exists($pathErrorPage)) die(Config::ERROR_FATAL); // Fatal error if error page does not exist
+		if (!file_exists($pathErrorPage)) {
+			// Fatal error if error page does not exist
+			throw new \ValueError("Error page (Config::PATH_ERROR) not found in {$pathErrorPage}", E_USER_ERROR);
+		}
 		$output = new Output($pathErrorPage); // Load error page to output handler
 
 		$settings = $output->getNodeContentArray("settings"); // Get error messages from error page
@@ -48,6 +53,5 @@ class Error extends \Exception
 		$output->replaceAll("error-message", $errorMessage); // Replace error message placeholder
 		$output = ControllerHtml::handleHtml($output); // Handle html content (e.g. add head, header and footer)
 		$output->print(); // Print output
-		exit; // Stop further execution
 	}
 }

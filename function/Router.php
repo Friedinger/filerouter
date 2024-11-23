@@ -5,6 +5,8 @@
 FileRouter
 A simple php router that allows to run code before accessing a file while keeping the file structure as the url structure.
 
+https://github.com/Friedinger/FileRouter
+
 by Friedinger (friedinger.org)
 
 */
@@ -52,14 +54,14 @@ class Router
 
 	/**
 	 * Redirects to specified URI.
+	 * @deprecated Use "throw new Redirect($uri)" instead.
 	 *
 	 * @param string $uri URI to redirect to.
 	 */
 	public static function redirect(string $uri): void
 	{
-		$uri = Misc::prepareUri($uri); // Prepare uri
-		header("Location: /$uri/"); // Set location header
-		exit(); // Stop further execution
+		trigger_error("Method " . __METHOD__ . " is deprecated. Use \"throw new Redirect(\$uri)\" instead.", E_USER_DEPRECATED);
+		throw new Redirect($uri);
 	}
 
 	private static function searchPath(string $uri): string
@@ -73,7 +75,7 @@ class Router
 		$directoryPosition = array_search(strtolower($path), array_map("strtolower", $directoryContent)); // Search for path in directory content (case insensitive)
 		if ($directoryPosition === false) {
 			// If path is not in directory content, return 404 error
-			throw new Error(404);
+			throw new ErrorPage(404);
 		}
 
 		return $directoryContent[$directoryPosition]; // Get path from directory content

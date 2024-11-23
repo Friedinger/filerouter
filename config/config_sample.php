@@ -5,15 +5,17 @@
 FileRouter
 A simple php router that allows to run code before accessing a file while keeping the file structure as the url structure.
 
+https://github.com/Friedinger/FileRouter
+
 by Friedinger (friedinger.org)
 
-Version: 2.1.4
+Version: 3.3.1
 
 */
 
 namespace FileRouter;
 
-final class Config
+class Config
 {
 	// Paths (relative to the server root)
 	const PATH_PUBLIC = "/../public/"; // Path to the public folder
@@ -35,10 +37,24 @@ final class Config
 		"samesite" => "Strict",
 	];
 
+	// Security
+	const CSRF_TEMPLATE = "csrf-token"; // CSRF token template variable name, also used as session key
+	const CSRF_PARAMETER = "token"; // CSRF token parameter name for get and post requests
+	const CSRF_LENGTH = 64; // Length of the CSRF token, set to 0 to disable CSRF protection
+
 	// Page titles
 	const TITLE_PREFIX = "FileRouter";
 	const TITLE_SUFFIX = "";
 	const TITLE_SEPARATOR = " | ";
+
+	// Error handling and logging
+	const DEBUG = true; // Enable debug mode (shows errors and warnings, disables error logging)
+	const LOG = true; // Enable logging
+	const LOG_MAX_FILE_SIZE = 1048576; // Maximum file size of log files before a new file is created (in bytes)
+	const LOG_PATH = [ // Paths to log files (relative to the server root, {date} will be replaced with the current date)
+		"error" => "/../logs/error_{date}.log", // Error log file required if logging is enabled
+		"additional" => "/../logs/additional.log", // Additional log files, can be used for custom logging by Logger::log("message", "additional")
+	];
 
 	// Other
 	const ALLOW_PAGE_PHP = true; // Allow to execute php code in pages. Warning: This can be a security risk if not handled carefully.

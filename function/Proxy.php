@@ -5,6 +5,8 @@
 FileRouter
 A simple php router that allows to run code before accessing a file while keeping the file structure as the url structure.
 
+https://github.com/Friedinger/FileRouter
+
 by Friedinger (friedinger.org)
 
 */
@@ -18,7 +20,7 @@ namespace FileRouter;
  */
 class Proxy
 {
-	private static $handleCustom;
+	private static mixed $handleCustom;
 
 	/**
 	 * Loads and processes route file.
@@ -61,38 +63,37 @@ class Proxy
 	 */
 	public static function handleCustom(Output $content, Output $settings): Output
 	{
-		$handleCustom = self::$handleCustom ?? null; // Get custom route file callable if set
-		if (isset($handleCustom)) {
-			$parameters = [[$content, $settings], [$content], []]; // Define parameter combinations
-			$success = false; // Flag indicating if callable was successful
-			foreach ($parameters as $parameter) {
-				try {
-					$return = call_user_func_array($handleCustom, $parameter); // Call function with parameters
-					if ($return instanceof Output) $content = $return; // Set content to return value if output
-					$success = true;
-					break;
-				} catch (\Throwable $e) {
-					// Continue with next parameter combination if callable failed
-				}
-			}
-			if (!$success) {
-				throw new Error(500, "Error in route file callable: {$e->getMessage()}"); // Error 500 if callable failed with all parameter combinations
-			}
-		}
+		// No handling if no custom route file callable set
+		if (!isset(self::$handleCustom)) return $content;
+
+		// Get parameters of custom route file callable
+		$reflection = new \ReflectionFunction(self::$handleCustom);
+		$parameters = array_map(function ($parameter) use ($content, $settings) {
+			return match ($parameter->getName()) {
+				"content" => $content,
+				"settings" => $settings,
+				default => null,
+			};
+		}, $reflection->getParameters());
+
+		$return = call_user_func_array(self::$handleCustom, $parameters); // Call custom route file callable with parameters
+		if ($return instanceof Output) $content = $return; // Set content to return value if output
 		return $content; // Return handled content
 	}
 
 	private function getRouteFile(string $path): string|null
 	{
-		$path = $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC . $path; // Combine document root, public path and URI to get file path
+		// Combine document root, public path and URI to get full path
+		$path = rtrim($_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC . $path, '/');
 
-		// Find route file in directory structure up to 100 directories deep
-		for ($iteration = 0; $iteration < 100; $iteration++) {
+		while ($path != rtrim($_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC, '/')) {
 			$file = "{$path}/_route.php"; // Construct route file path
-			if (file_exists($file)) return $file; // Check if route file exists
-			if ($path == $_SERVER["DOCUMENT_ROOT"] . Config::PATH_PUBLIC) break; // Stop if public path reached
-			$path = dirname($path) . "/"; // Move up one directory
+			if (file_exists($file)) {
+				return $file; // Check if route file exists
+			}
+			$path = dirname($path); // Move up one directory
 		}
+
 		return null; // Return null if no route file found
 	}
 }
