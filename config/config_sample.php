@@ -50,6 +50,7 @@ class Config
 	// Error handling and logging
 	const DEBUG = true; // Enable debug mode (shows errors and warnings, disables error logging)
 	const LOG = true; // Enable logging
+	const LOG_MAX_FILE_SIZE = 1048576; // Maximum file size of log files before a new file is created (in bytes)
 	const LOG_PATH = [ // Paths to log files (relative to the server root, {date} will be replaced with the current date)
 		"error" => "/../logs/error_{date}.log", // Error log file required if logging is enabled
 		"additional" => "/../logs/additional.log", // Additional log files, can be used for custom logging by Logger::log("message", "additional")

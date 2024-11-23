@@ -82,11 +82,11 @@ class FileRouter
 			Logger::logError("{$exception->getMessage()} in {$exception->getFile()}({$exception->getLine()})", E_USER_ERROR); // Log unhandled exceptions
 			throw new ErrorPage(500); // Internal server error if unhandled exception occurred
 		} catch (\Throwable $e) {
+			if ($e instanceof ErrorPage) return;
 			if (Config::LOG) {
 				error_log("ERROR {$e->getMessage()} in exception handling"); // Log error message
 			}
-			echo Config::ERROR_FATAL ?? "<h1>Error</h1><p>An error occurred in the request.</p><p>Please contact the webmaster</p>";
-			return;
+			die(Config::ERROR_FATAL ?? "<h1>Error</h1><p>An error occurred in the request.</p><p>Please contact the webmaster</p>");
 		}
 	}
 
