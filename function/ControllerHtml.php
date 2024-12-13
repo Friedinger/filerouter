@@ -30,10 +30,8 @@ class ControllerHtml
 	 */
 	public static function handle(string $filePath): bool
 	{
-		$content = new Output($filePath);
-		$content = self::handleSettings($content); // Get and store settings
+		$content = new Output($filePath); // Load content of the web page
 
-		$content = Proxy::handleCustom($content, self::$settings); // Handle custom function from route file
 		$content = self::handleHtml($content); // Handle content of the web page
 
 		// Print handled content
@@ -54,10 +52,15 @@ class ControllerHtml
 	{
 		$content = self::handleSettings($content); // Get and store settings if not already set
 
+		$content = Config::handleCustomPre($content, self::$settings); // Handle custom config pre function
+		$content = Proxy::handleCustom($content, self::$settings); // Handle custom route file function
+
 		// Handle head, header and footer
 		$content = self::handleHead($content);
 		$content = self::handleHeader($content);
 		$content = self::handleFooter($content);
+
+		$content = Config::handleCustomPost($content, self::$settings); // Handle custom config post function
 
 		// Output CSRF token if enabled
 		if (Config::SESSION && Config::CSRF_LENGTH > 0) {

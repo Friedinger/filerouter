@@ -60,4 +60,15 @@ class Config
 	const ALLOW_PAGE_PHP = true; // Allow to execute php code in pages. Warning: This can be a security risk if not handled carefully.
 	const IMAGE_RESIZE_QUERY = "res"; // Query parameter to specify the width of an image to resize it
 	const ERROR_FATAL = "<h1>Error</h1><p>An error occurred in the request.</p><p>Please contact the webmaster</p>"; // Fatal error message if error page can't be loaded
+	public static function handleCustomPre(Output $content, Output $settings): Output
+	{
+		// Handle custom function before handling html and route file function
+		$content->changeAttribute("//html", "lang", "en");
+		return $content;
+	}
+	public static function handleCustomPost(Output $content, Output $settings): Output
+	{
+		// Handle custom function after handling html and route file function
+		return $content;
+	}
 }
