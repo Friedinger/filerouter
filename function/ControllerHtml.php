@@ -100,8 +100,8 @@ class ControllerHtml
 		$title = strip_tags($title);
 		$title = mb_convert_encoding($title, "UTF-8", ["HTML-ENTITIES"]);
 		$head->replaceContent("title", $title);
-		$replace = "<html><head>" . $head->getContent("head") . "</head><body>" . $content->getContent("body") . "</body></html>";
-		return new Output($replace, true);
+		$content->setContent("head", $head->getContent("head"), null, true);
+		return $content;
 	}
 
 	private static function handleHeader(Output $content): Output
@@ -112,15 +112,10 @@ class ControllerHtml
 			$header = new Output($_SERVER["DOCUMENT_ROOT"] . Config::PATH_HEADER);
 			$replace = $header->getContent("body") . $content->getContent("body");
 			$content->replaceContent("body", $replace);
-			return $content;
 		} elseif (empty(trim($contentHeader))) {
-			// Remove header
-			$content->replaceAll("header", "");
-			return $content;
-		} else {
-			// Keep header set in content
-			return $content;
+			$content->replaceAll("header", ""); // Remove header
 		}
+		return $content;
 	}
 
 	private static function handleFooter(Output $content): Output
@@ -131,15 +126,10 @@ class ControllerHtml
 			$footer = new Output($_SERVER["DOCUMENT_ROOT"] . Config::PATH_FOOTER);
 			$replace = $content->getContent("body") . $footer->getContent("body");
 			$content->replaceContent("body", $replace);
-			return $content;
 		} elseif (empty(trim($contentFooter))) {
-			// Remove footer
-			$content->replaceAll("footer", "");
-			return $content;
-		} else {
-			// Keep footer set in content
-			return $content;
+			$content->replaceAll("footer", ""); // Remove footer
 		}
+		return $content;
 	}
 
 	private static function handleSettings(Output $content): Output

@@ -42,7 +42,7 @@ class ErrorPage extends \Exception
 		}
 		$output = new Output($pathErrorPage); // Load error page to output handler
 
-		$settings = $output->getNodeContentArray("settings"); // Get error messages from error page
+		$settings = $output->getContentArray("settings"); // Get error messages from error page
 		$errorMessage = $errorMessage // Use provided error message
 			?? $settings["error-messages"]["error-{$errorCode}"] // or get error message for error code
 			?? $settings["error-messages"]["default"] // or get default error message
