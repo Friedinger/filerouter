@@ -33,27 +33,41 @@ class Output
 	/**
 	 * Output constructor.
 	 *
-	 * @param string $content The content of the web page.
-	 * @param bool $directInput Flag indicating if the content is a direct input or a file path.
+	 * @param string $content The content of the output.
 	 */
-	public function __construct(string $content, bool $directInput = false)
+	public function __construct(string $content)
 	{
 		$this->dom = new DOMDocument(); // Create new dom document
 
-		if ($directInput) {
-			// Direct input content as html string if flag is set
-			$output = $content;
-		} elseif (Config::ALLOW_PAGE_PHP) {
+		$output = mb_encode_numericentity($content, [0x80, 0x10FFFF, 0, ~0], "UTF-8");
+		$this->dom->loadHTML($output, LIBXML_NOERROR); // Load html content into dom
+	}
+
+	/**
+	 * Creates a new Output object from a file.
+	 * The content of the file is loaded and returned as a new Output object.
+	 * If enabled in the config, PHP code in the file is processed.
+	 *
+	 * @param string $filePath The path to the file to load the content from.
+	 * @throws \UnexpectedValueException If the file does not exist.
+	 * @return Output The new Output object.
+	 */
+	public static function createFromFile(string $filePath): Output
+	{
+		if (Config::ALLOW_PAGE_PHP) {
 			// Process php in content file if enabled in config
 			ob_start();
-			require $content;
-			$output = ob_get_clean();
+			require $filePath;
+			$content = ob_get_clean();
 		} else {
 			// Get content from file without processing php
-			$output = file_get_contents($content);
+			$content = file_get_contents($filePath);
 		}
-		$output = mb_encode_numericentity($output, [0x80, 0x10FFFF, 0, ~0], "UTF-8");
-		$this->dom->loadHTML($output, LIBXML_NOERROR); // Load html content into dom
+
+		if ($content === false) {
+			throw new \UnexpectedValueException("File not found: {$filePath}");
+		}
+		return new Output($content);
 	}
 
 	/**
@@ -182,7 +196,7 @@ class Output
 		}
 
 		$valueDom = new DOMDocument();
-		$valueDom->loadHTML(mb_encode_numericentity("<html>" . $value . "</html>", [0x80, 0x10FFFF, 0, ~0], "UTF-8"), LIBXML_NOERROR | LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD); // Load html value into dom
+		$valueDom->loadHTML(mb_encode_numericentity("<html>$value</html>", [0x80, 0x10FFFF, 0, ~0], "UTF-8"), LIBXML_NOERROR | LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD); // Load html value into dom
 
 		$importedNodes = [];
 		foreach ($valueDom->getElementsByTagName("html")->item(0)->childNodes as $child) {

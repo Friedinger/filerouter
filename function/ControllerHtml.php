@@ -30,7 +30,7 @@ class ControllerHtml
 	 */
 	public static function handle(string $filePath): bool
 	{
-		$content = new Output($filePath); // Load content of the web page
+		$content = Output::createFromFile($filePath); // Load content of the web page
 
 		$content = self::handleHtml($content); // Handle content of the web page
 
@@ -72,7 +72,7 @@ class ControllerHtml
 
 	private static function handleHead(Output $content): Output
 	{
-		$head = new Output($_SERVER["DOCUMENT_ROOT"] . Config::PATH_HEAD);
+		$head = Output::createFromFile($_SERVER["DOCUMENT_ROOT"] . Config::PATH_HEAD);
 
 		// Set page title
 		if (is_null(self::$settings->getContent("title"))) {
@@ -112,7 +112,7 @@ class ControllerHtml
 		$contentHeader = $content->getContent("header");
 		if (is_null($contentHeader)) {
 			// Load header from modules file
-			$header = new Output($_SERVER["DOCUMENT_ROOT"] . Config::PATH_HEADER);
+			$header = Output::createFromFile($_SERVER["DOCUMENT_ROOT"] . Config::PATH_HEADER);
 			$replace = $header->getContent("body") . $content->getContent("body");
 			$content->replaceContent("body", $replace);
 		} elseif (empty(trim($contentHeader))) {
@@ -126,7 +126,7 @@ class ControllerHtml
 		$contentFooter = $content->getContent("footer");
 		if (is_null($contentFooter)) {
 			// Load footer from modules file
-			$footer = new Output($_SERVER["DOCUMENT_ROOT"] . Config::PATH_FOOTER);
+			$footer = Output::createFromFile($_SERVER["DOCUMENT_ROOT"] . Config::PATH_FOOTER);
 			$replace = $content->getContent("body") . $footer->getContent("body");
 			$content->replaceContent("body", $replace);
 		} elseif (empty(trim($contentFooter))) {
@@ -138,7 +138,7 @@ class ControllerHtml
 	private static function handleSettings(Output $content): Output
 	{
 		if (!isset(self::$settings)) {
-			self::$settings = new Output($content->getContent("settings") ?? " ", true);
+			self::$settings = new Output($content->getContent("settings") ?? " ");
 			$content->replaceAll("settings", "");
 		}
 		return $content;

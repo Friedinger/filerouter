@@ -40,7 +40,7 @@ class ErrorPage extends \Exception
 			// Fatal error if error page does not exist
 			throw new \ValueError("Error page (Config::PATH_ERROR) not found in {$pathErrorPage}", E_USER_ERROR);
 		}
-		$output = new Output($pathErrorPage); // Load error page to output handler
+		$output = Output::createFromFile($pathErrorPage); // Load error page to output handler
 
 		$settings = $output->getContentArray("settings"); // Get error messages from error page
 		$errorMessage = $errorMessage // Use provided error message
